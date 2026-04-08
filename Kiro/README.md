@@ -5,7 +5,7 @@ A role-based web platform for Think n Solutions (TnS) that manages the end-to-en
 ## Technology Stack
 
 - **Backend**: Java 21, Spring Boot 3.4.1
-- **Frontend**: Angular 21 (to be implemented)
+- **Frontend**: Angular 21
 - **Database**: MS SQL Server
 - **Build Tool**: Maven
 
