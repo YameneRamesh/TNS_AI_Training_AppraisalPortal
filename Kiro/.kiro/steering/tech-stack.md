@@ -1,3 +1,8 @@
+---
+inclusion: auto
+description: Technology stack specifications for the TNS Appraisal Portal - Java 21, Spring Boot, Angular 21, and MS SQL Server
+---
+
 # Tech Stack
 
 Use the following technology stack for all implementations:

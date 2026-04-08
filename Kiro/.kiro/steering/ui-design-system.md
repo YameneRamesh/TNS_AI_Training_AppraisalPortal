@@ -1,5 +1,6 @@
 ---
 inclusion: auto
+description: UI design system guidelines for TNS Appraisal Portal including brand colors, typography, spacing, animations, and component patterns
 ---
 
 # UI Design System — TNS Appraisal Form 
