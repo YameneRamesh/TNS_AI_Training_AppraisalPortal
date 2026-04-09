@@ -244,7 +244,7 @@ This phase must be completed first by the lead developer before other phases can
 - [ ] 5.1.5 Write end-to-end integration test: Historical form access with template versioning
 
 ### 5.2 Frontend E2E Testing
-- [ ] 5.2.1 Set up Cypress or Playwright for E2E testing
+- [ ] 5.2.1 Set up Vitest (default in Angular 21) and Cypress for E2E testing
 - [ ] 5.2.2 Write E2E test: Employee login and self-appraisal submission
 - [ ] 5.2.3 Write E2E test: Manager login and review completion
 - [ ] 5.2.4 Write E2E test: HR cycle trigger and monitoring

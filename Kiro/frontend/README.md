@@ -1,6 +1,6 @@
 # Employee Appraisal System - Frontend
 
-This project was generated with Angular CLI and uses Angular 18+ (compatible with Angular 21).
+This project was generated with Angular CLI and uses Angular 21.
 
 ## Prerequisites
 
