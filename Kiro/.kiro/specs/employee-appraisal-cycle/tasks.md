@@ -126,53 +126,53 @@ This phase must be completed first by the lead developer before other phases can
 ## Phase 3: Appraisal Form and Review Workflow (Developer 3)
 
 ### 3.1 Form Module
-- [ ] 3.1.1 Create AppraisalForm entity and repository
-- [ ] 3.1.2 Implement FormService (CRUD, state transitions, validation)
-- [ ] 3.1.3 Create FormController with /api/forms endpoints
-- [ ] 3.1.4 Implement form data JSON serialization/deserialization
-- [ ] 3.1.5 Implement state machine for form status transitions
-- [ ] 3.1.6 Implement draft save logic (employee)
-- [ ] 3.1.7 Implement form submission logic (employee)
+- [x] 3.1.1 Create AppraisalForm entity and repository
+- [x] 3.1.2 Implement FormService (CRUD, state transitions, validation)
+- [x] 3.1.3 Create FormController with /api/forms endpoints
+- [x] 3.1.4 Implement form data JSON serialization/deserialization
+- [x] 3.1.5 Implement state machine for form status transitions
+- [x] 3.1.6 Implement draft save logic (employee)
+- [x] 3.1.7 Implement form submission logic (employee)
 
 ### 3.2 Review Module
-- [ ] 3.2.1 Implement ReviewService (review operations, completion)
-- [ ] 3.2.2 Create ReviewController with /api/forms/{id}/review endpoints
-- [ ] 3.2.3 Implement review draft save logic (manager)
-- [ ] 3.2.4 Implement review completion logic (manager)
-- [ ] 3.2.5 Implement backup reviewer permission logic
+- [x] 3.2.1 Implement ReviewService (review operations, completion)
+- [x] 3.2.2 Create ReviewController with /api/forms/{id}/review endpoints
+- [x] 3.2.3 Implement review draft save logic (manager)
+- [x] 3.2.4 Implement review completion logic (manager)
+- [x] 3.2.5 Implement backup reviewer permission logic
 
 ### 3.3 Frontend Form Renderer
-- [ ] 3.3.1 Create dynamic form renderer service (interprets JSON template)
-- [ ] 3.3.2 Implement section renderers (header, rating_key, key_responsibilities, idp, policy_adherence, goals, signature)
-- [ ] 3.3.3 Create form field components (text, textarea, rating selector)
-- [ ] 3.3.4 Implement form validation logic
-- [ ] 3.3.5 Create form navigation and progress indicator
+- [x] 3.3.1 Create dynamic form renderer service (interprets JSON template)
+- [x] 3.3.2 Implement section renderers (header, rating_key, key_responsibilities, idp, policy_adherence, goals, signature)
+- [x] 3.3.3 Create form field components (text, textarea, rating selector)
+- [x] 3.3.4 Implement form validation logic
+- [x] 3.3.5 Create form navigation and progress indicator
 
 ### 3.4 Frontend Employee Module
-- [ ] 3.4.1 Create employee dashboard component
-- [ ] 3.4.2 Create self-appraisal form component
-- [ ] 3.4.3 Implement draft save functionality
-- [ ] 3.4.4 Implement form submission with confirmation
-- [ ] 3.4.5 Create historical forms viewer
+- [x] 3.4.1 Create employee dashboard component
+- [x] 3.4.2 Create self-appraisal form component
+- [x] 3.4.3 Implement draft save functionality
+- [x] 3.4.4 Implement form submission with confirmation
+- [x] 3.4.5 Create historical forms viewer
 
 ### 3.5 Frontend Manager Module
-- [ ] 3.5.1 Create manager dashboard component
-- [ ] 3.5.2 Create team appraisal list component
-- [ ] 3.5.3 Create review form component
-- [ ] 3.5.4 Implement review draft save functionality
-- [ ] 3.5.5 Implement review completion with confirmation
-- [ ] 3.5.6 Create manager's own self-appraisal view
+- [x] 3.5.1 Create manager dashboard component
+- [x] 3.5.2 Create team appraisal list component
+- [x] 3.5.3 Create review form component
+- [x] 3.5.4 Implement review draft save functionality
+- [x] 3.5.5 Implement review completion with confirmation
+- [x] 3.5.6 Create manager's own self-appraisal view
 
 ### 3.6 Testing - Form and Review
-- [ ] 3.6.1 Write property test: Appraisal Workflow State Machine Validity (Property 11)
-- [ ] 3.6.2 Write property test: Employee Cannot Edit Submitted Form (Property 12)
-- [ ] 3.6.3 Write property test: Dynamic Form Rendering Completeness (Property 9)
-- [ ] 3.6.4 Write property test: Backup Reviewer Permission Equivalence (Property 19)
-- [ ] 3.6.5 Write unit tests for FormService and ReviewService
-- [ ] 3.6.6 Write unit tests for form data JSON round trips
-- [ ] 3.6.7 Write integration tests for end-to-end appraisal workflow
-- [ ] 3.6.8 Write Angular unit tests for form renderer
-- [ ] 3.6.9 Write Angular unit tests for employee and manager components
+- [x] 3.6.1 Write property test: Appraisal Workflow State Machine Validity (Property 11)
+- [x] 3.6.2 Write property test: Employee Cannot Edit Submitted Form (Property 12)
+- [x] 3.6.3 Write property test: Dynamic Form Rendering Completeness (Property 9)
+- [x] 3.6.4 Write property test: Backup Reviewer Permission Equivalence (Property 19)
+- [x] 3.6.5 Write unit tests for FormService and ReviewService
+- [x] 3.6.6 Write unit tests for form data JSON round trips
+- [x] 3.6.7 Write integration tests for end-to-end appraisal workflow
+- [x] 3.6.8 Write Angular unit tests for form renderer
+- [-] 3.6.9 Write Angular unit tests for employee and manager components
 
 ---
 

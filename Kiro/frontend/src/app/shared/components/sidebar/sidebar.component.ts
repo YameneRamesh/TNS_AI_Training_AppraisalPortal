@@ -36,19 +36,20 @@ export class SidebarComponent {
   @Input() user: User | null = null;
 
   private menuItems: MenuItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', roles: ['EMPLOYEE', 'MANAGER', 'HR', 'ADMIN'] },
-    { label: 'My Appraisal', icon: 'assignment', route: '/employee/appraisal', roles: ['EMPLOYEE', 'MANAGER'] },
-    { label: 'Team Reviews', icon: 'people', route: '/manager/reviews', roles: ['MANAGER'] },
+    { label: 'Dashboard', icon: 'dashboard', route: '/employee/dashboard', roles: ['EMPLOYEE'] },
+    { label: 'Dashboard', icon: 'dashboard', route: '/manager/dashboard', roles: ['MANAGER'] },
+    { label: 'My Appraisal History', icon: 'history', route: '/employee/history', roles: ['EMPLOYEE'] },
+    { label: 'Team Reviews', icon: 'people', route: '/manager/dashboard', roles: ['MANAGER'] },
     { label: 'Cycle Management', icon: 'event', route: '/hr/cycles', roles: ['HR'] },
-    { label: 'User Management', icon: 'admin_panel_settings', route: '/admin/users', roles: ['ADMIN'] },
-    { label: 'Audit Logs', icon: 'history', route: '/admin/audit', roles: ['ADMIN'] }
+    { label: 'HR Dashboard', icon: 'bar_chart', route: '/hr', roles: ['HR'] },
+    { label: 'User Management', icon: 'admin_panel_settings', route: '/admin', roles: ['ADMIN'] },
+    { label: 'Audit Logs', icon: 'history', route: '/admin/audit-logs', roles: ['ADMIN'] }
   ];
 
   get visibleMenuItems(): MenuItem[] {
     if (!this.user) return [];
-    
     const userRoles = this.user.roles;
-    return this.menuItems.filter(item => 
+    return this.menuItems.filter(item =>
       item.roles.some(role => userRoles.includes(role))
     );
   }

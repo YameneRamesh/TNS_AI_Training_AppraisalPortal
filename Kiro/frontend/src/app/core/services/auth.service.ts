@@ -17,8 +17,8 @@ const USER_SESSION_KEY = 'tns_appraisal_user_session';
 })
 export class AuthService {
   private readonly API_URL = `${environment.apiUrl}/auth`;
-  private readonly SESSION_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
-  private readonly WARNING_BEFORE_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes before timeout
+  private readonly SESSION_TIMEOUT_MS = 15 * 60 * 1000;
+  private readonly WARNING_BEFORE_TIMEOUT_MS = 2 * 60 * 1000;
 
   private currentUserSubject = new BehaviorSubject<User | null>(this.getStoredUser());
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -38,9 +38,6 @@ export class AuthService {
     this.initializeActivityTracking();
   }
 
-  /**
-   * Get stored user from sessionStorage
-   */
   private getStoredUser(): User | null {
     try {
       const stored = sessionStorage.getItem(USER_SESSION_KEY);
@@ -50,9 +47,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Store user in sessionStorage
-   */
   private storeUser(user: User | null): void {
     if (user) {
       sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(user));
@@ -61,9 +55,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Check if user is currently authenticated by calling /api/auth/me
-   */
   private checkAuthStatus(): void {
     this.http.get<ApiResponse<User>>(`${this.API_URL}/me`).subscribe({
       next: (response) => {
@@ -78,8 +69,11 @@ export class AuthService {
     });
   }
 
-  login(credentials: LoginRequest): Observable<User> {
-    return this.http.post<ApiResponse<User>>(`${this.API_URL}/login`, credentials).pipe(
+  /**
+   * Login with employee ID and password
+   */
+  login(employeeId: string, password: string): Observable<User> {
+    return this.http.post<ApiResponse<User>>(`${this.API_URL}/login`, { employeeId, password }).pipe(
       map(response => response.data as User),
       tap(user => {
         this.currentUserSubject.next(user);
@@ -103,38 +97,25 @@ export class AuthService {
     );
   }
 
-  /**
-   * Get current user value (synchronous)
-   */
   get currentUserValue(): User | null {
     return this.currentUserSubject.value;
   }
 
-  /**
-   * Check if user has a specific role
-   */
   hasRole(roleName: string): boolean {
     const user = this.currentUserValue;
     return user ? user.roles.includes(roleName) : false;
   }
 
-  /**
-   * Check if user has any of the specified roles
-   */
   hasAnyRole(roleNames: string[]): boolean {
     const user = this.currentUserValue;
     return user ? user.roles.some(r => roleNames.includes(r)) : false;
   }
 
-  /**
-   * Initialize activity tracking for session timeout management.
-   */
   private initializeActivityTracking(): void {
     const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
     activityEvents.forEach(event => {
       document.addEventListener(event, () => this.updateActivity(), { passive: true });
     });
-
     this.activityCheckSubscription = interval(30000).subscribe(() => {
       this.checkSessionTimeout();
     });
@@ -151,16 +132,13 @@ export class AuthService {
 
   private checkSessionTimeout(): void {
     if (!this.currentUserValue) return;
-
     const timeSinceLastActivity = Date.now() - this.lastActivityTime;
     const timeUntilTimeout = this.SESSION_TIMEOUT_MS - timeSinceLastActivity;
-
     if (timeUntilTimeout <= this.WARNING_BEFORE_TIMEOUT_MS && timeUntilTimeout > 0) {
       if (!this.sessionWarningSubject.value) {
         this.sessionWarningSubject.next(true);
       }
     }
-
     if (timeUntilTimeout <= 0) {
       this.handleSessionExpired();
     }
@@ -182,8 +160,7 @@ export class AuthService {
   getRemainingSessionTime(): number {
     if (!this.currentUserValue) return 0;
     const timeSinceLastActivity = Date.now() - this.lastActivityTime;
-    const timeRemaining = this.SESSION_TIMEOUT_MS - timeSinceLastActivity;
-    return Math.max(0, Math.floor(timeRemaining / 1000));
+    return Math.max(0, Math.floor((this.SESSION_TIMEOUT_MS - timeSinceLastActivity) / 1000));
   }
 
   ngOnDestroy(): void {

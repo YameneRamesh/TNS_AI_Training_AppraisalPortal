@@ -9,6 +9,8 @@ export interface ManagerDashboard {
   pendingReviews: number;
   completedReviews: number;
   completionPercentage: number;
+  /** Historical appraisal forms for the manager (read-only, Req 8.6) */
+  historicalForms: AppraisalFormSummary[];
 }
 
 export interface HRDashboard {
@@ -34,6 +36,7 @@ export interface TeamMemberForm {
   employeeId: number;
   employeeName: string;
   designation: string;
+  department?: string;
   status: string;
   submittedAt?: string;
 }

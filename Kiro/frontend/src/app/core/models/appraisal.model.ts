@@ -27,6 +27,7 @@ export interface AppraisalForm {
   cycleName?: string;
   employeeId: number;
   employeeName?: string;
+  designation?: string;
   managerId: number;
   managerName?: string;
   backupReviewerId?: number;
