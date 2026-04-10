@@ -19,6 +19,29 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/user-management-dashboard.component').then(m => m.UserManagementDashboardComponent)
   },
   {
+    path: 'admin/audit-logs',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
+    loadComponent: () => import('./features/admin/audit-log-viewer.component').then(m => m.AuditLogViewerComponent)
+  },
+  {
+    path: 'hr',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['HR', 'ADMIN'] },
+    loadComponent: () => import('./features/hr/hr-dashboard.component').then(m => m.HrDashboardComponent)
+  },
+  {
+    path: 'manager',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['MANAGER', 'ADMIN'] },
+    loadComponent: () => import('./features/manager/manager-dashboard.component').then(m => m.ManagerDashboardComponent)
+  },
+  {
+    path: 'employee',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/employee/employee-dashboard.component').then(m => m.EmployeeDashboardComponent)
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }

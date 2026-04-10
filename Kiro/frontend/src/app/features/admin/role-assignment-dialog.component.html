@@ -59,8 +59,10 @@
     @if (isSaving) {
       <mat-spinner diameter="20"></mat-spinner>
     } @else {
-      <mat-icon>save</mat-icon>
-      <span>Save Changes</span>
+      <ng-container>
+        <mat-icon>save</mat-icon>
+        <span>Save Changes</span>
+      </ng-container>
     }
   </button>
 </mat-dialog-actions>

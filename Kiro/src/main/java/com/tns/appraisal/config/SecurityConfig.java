@@ -42,10 +42,14 @@ public class SecurityConfig {
             // Disable CSRF for POC environment
             .csrf(csrf -> csrf.disable())
             
+            // CORS handled by CorsFilter bean in WebMvcConfig (runs before Security)
+            
             // Configure authorization rules
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/api/auth/login").permitAll()
+                // Allow preflight OPTIONS requests
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 
                 // All other endpoints require authentication
                 .anyRequest().authenticated()

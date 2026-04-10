@@ -27,16 +27,21 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }),
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
+        // Don't redirect for auth endpoints (login = wrong creds, me = initial check)
+        if (req.url.includes('/auth/login') || req.url.includes('/auth/me')) {
+          return throwError(() => error);
+        }
+
         // Session expired or not authenticated - redirect to login
         console.warn('Session expired or unauthorized. Redirecting to login.');
         
-        // Check if error message indicates session expiration
-        if (error.error?.message?.includes('Session expired')) {
+        const isSessionExpired = error.error?.message?.includes('Session expired');
+        if (isSessionExpired) {
           console.warn('Session expired due to inactivity');
         }
         
         router.navigate(['/login'], { 
-          queryParams: { sessionExpired: error.error?.message?.includes('Session expired') ? 'true' : 'false' }
+          queryParams: { sessionExpired: isSessionExpired ? 'true' : 'false' }
         });
       } else if (error.status === 403) {
         // Forbidden - insufficient permissions

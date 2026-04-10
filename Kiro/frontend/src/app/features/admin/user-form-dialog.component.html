@@ -126,8 +126,10 @@
     @if (isLoading) {
       <mat-spinner diameter="20"></mat-spinner>
     } @else {
-      <mat-icon>{{ data.mode === 'create' ? 'add' : 'save' }}</mat-icon>
-      <span>{{ data.mode === 'create' ? 'Create' : 'Save' }}</span>
+      <ng-container>
+        <mat-icon>{{ data.mode === 'create' ? 'add' : 'save' }}</mat-icon>
+        <span>{{ data.mode === 'create' ? 'Create' : 'Save' }}</span>
+      </ng-container>
     }
   </button>
 </mat-dialog-actions>

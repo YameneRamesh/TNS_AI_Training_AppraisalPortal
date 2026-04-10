@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,6 +24,7 @@ interface RoleOption {
 @Component({
   selector: 'app-role-assignment-dialog',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     FormsModule,
@@ -52,6 +53,7 @@ export class RoleAssignmentDialogComponent implements OnInit {
   constructor(
     private userService: UserService,
     private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef,
     public dialogRef: MatDialogRef<RoleAssignmentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: RoleAssignmentDialogData
   ) {}
@@ -71,11 +73,12 @@ export class RoleAssignmentDialogComponent implements OnInit {
           selected: Array.isArray(this.data.user.roles) && this.data.user.roles.includes(role.name)
         }));
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.isLoading = false;
         this.snackBar.open('Failed to load roles', 'Close', { duration: 3000 });
-        console.error('Error loading roles:', error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -100,6 +103,7 @@ export class RoleAssignmentDialogComponent implements OnInit {
       error: (error) => {
         this.isSaving = false;
         this.snackBar.open(error.error?.message || 'Failed to update roles', 'Close', { duration: 3000 });
+        this.cdr.markForCheck();
       }
     });
   }

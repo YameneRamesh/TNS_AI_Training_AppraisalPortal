@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -20,6 +20,7 @@ export interface UserFormDialogData {
 @Component({
   selector: 'app-user-form-dialog',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -45,6 +46,7 @@ export class UserFormDialogComponent implements OnInit {
     private fb: FormBuilder,
     private userService: UserService,
     private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef,
     public dialogRef: MatDialogRef<UserFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserFormDialogData
   ) {
@@ -73,17 +75,19 @@ export class UserFormDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadManagers();
+    // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
+    // when dialog is opened inside a change detection cycle
+    setTimeout(() => this.loadManagers());
   }
 
   loadManagers(): void {
-    // Load users with MANAGER role for the manager dropdown
     this.userService.getUsers({ role: 'MANAGER', size: 100 }).subscribe({
       next: (response) => {
         this.availableManagers = response.content;
+        this.cdr.markForCheck();
       },
-      error: (error) => {
-        console.error('Error loading managers:', error);
+      error: () => {
+        this.cdr.markForCheck();
       }
     });
   }
@@ -107,6 +111,7 @@ export class UserFormDialogComponent implements OnInit {
         error: (error) => {
           this.isLoading = false;
           this.snackBar.open(error.error?.message || 'Failed to create user', 'Close', { duration: 3000 });
+          this.cdr.markForCheck();
         }
       });
     } else if (this.data.mode === 'edit' && this.data.user) {
@@ -127,6 +132,7 @@ export class UserFormDialogComponent implements OnInit {
         error: (error) => {
           this.isLoading = false;
           this.snackBar.open(error.error?.message || 'Failed to update user', 'Close', { duration: 3000 });
+          this.cdr.markForCheck();
         }
       });
     }

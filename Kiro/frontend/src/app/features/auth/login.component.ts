@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -35,7 +35,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       loginIdentifier: ['', [Validators.required]],
@@ -68,6 +69,7 @@ export class LoginComponent {
       error: (error) => {
         this.isLoading = false;
         this.errorMessage = error.error?.message || 'Invalid credentials. Please try again.';
+        this.cdr.detectChanges();
       }
     });
   }
