@@ -42,41 +42,41 @@ This phase must be completed first by the lead developer before other phases can
 ## Phase 1: Authentication and User Management (Developer 1)
 
 ### 1.1 Authentication Module
-- [x] 1.1.1 Create User entity and UserRepository
-- [x] 1.1.2 Create Role entity and RoleRepository
-- [x] 1.1.3 Implement AuthService (login, logout, session management)
-- [x] 1.1.4 Create AuthController with /api/auth/login, /api/auth/logout, /api/auth/me endpoints
-- [x] 1.1.5 Implement password hashing with BCrypt
-- [x] 1.1.6 Configure Spring Security for session-based authentication
-- [x] 1.1.7 Implement session timeout handling
+- [ ] 1.1.1 Create User entity and UserRepository
+- [ ] 1.1.2 Create Role entity and RoleRepository
+- [ ] 1.1.3 Implement AuthService (login, logout, session management)
+- [ ] 1.1.4 Create AuthController with /api/auth/login, /api/auth/logout, /api/auth/me endpoints
+- [ ] 1.1.5 Implement password hashing with BCrypt
+- [ ] 1.1.6 Configure Spring Security for session-based authentication
+- [ ] 1.1.7 Implement session timeout handling
 
 ### 1.2 User Management Module (Admin)
-- [x] 1.2.1 Create UserService with CRUD operations
-- [x] 1.2.2 Create UserController with /api/users endpoints
-- [x] 1.2.3 Implement role assignment/revocation logic
-- [x] 1.2.4 Create ReportingHierarchy entity and repository
-- [x] 1.2.5 Implement reporting hierarchy management
+- [ ] 1.2.1 Create UserService with CRUD operations
+- [ ] 1.2.2 Create UserController with /api/users endpoints
+- [ ] 1.2.3 Implement role assignment/revocation logic
+- [ ] 1.2.4 Create ReportingHierarchy entity and repository
+- [ ] 1.2.5 Implement reporting hierarchy management
 
 ### 1.3 Frontend Authentication
 - [ ] 1.3.1 Create AuthService in Angular
-- [x] 1.3.2 Implement login page component
-- [x] 1.3.3 Implement session management and auto-logout on 401
-- [x] 1.3.4 Create user profile display component
-- [x] 1.3.5 Implement route guards (AuthGuard, RoleGuard)
+- [ ] 1.3.2 Implement login page component
+- [ ] 1.3.3 Implement session management and auto-logout on 401
+- [ ] 1.3.4 Create user profile display component
+- [ ] 1.3.5 Implement route guards (AuthGuard, RoleGuard)
 
 ### 1.4 Frontend Admin Module
-- [x] 1.4.1 Create user management dashboard component
-- [x] 1.4.2 Implement user list with search and filter
-- [x] 1.4.3 Create user create/edit form
-- [x] 1.4.4 Implement role assignment UI
-- [x] 1.4.5 Create audit log viewer component
+- [ ] 1.4.1 Create user management dashboard component
+- [ ] 1.4.2 Implement user list with search and filter
+- [ ] 1.4.3 Create user create/edit form
+- [ ] 1.4.4 Implement role assignment UI
+- [ ] 1.4.5 Create audit log viewer component
 
 ### 1.5 Testing - Authentication and User Management
-- [x] 1.5.1 Write property test: Authentication Correctness (Property 1)
-- [x] 1.5.2 Write property test: Session Protection (Property 2)
-- [x] 1.5.3 Write property test: Role-Based Access Enforcement (Property 3)
-- [x] 1.5.4 Write property test: Role Assignment Round Trip (Property 5)
-- [x] 1.5.5 Write unit tests for AuthService and UserService
+- [ ] 1.5.1 Write property test: Authentication Correctness (Property 1)
+- [ ] 1.5.2 Write property test: Session Protection (Property 2)
+- [ ] 1.5.3 Write property test: Role-Based Access Enforcement (Property 3)
+- [ ] 1.5.4 Write property test: Role Assignment Round Trip (Property 5)
+- [ ] 1.5.5 Write unit tests for AuthService and UserService
 - [ ] 1.5.6 Write integration tests for authentication flow
 - [ ] 1.5.7 Write Angular unit tests for auth components
 
@@ -85,41 +85,41 @@ This phase must be completed first by the lead developer before other phases can
 ## Phase 2: Appraisal Cycle and Template Management (Developer 2)
 
 ### 2.1 Template Module
-- [ ] 2.1.1 Create AppraisalTemplate entity and repository
-- [ ] 2.1.2 Implement TemplateService (CRUD, versioning, activation)
-- [ ] 2.1.3 Create TemplateController with /api/templates endpoints
-- [ ] 2.1.4 Implement JSON schema validation for template structure
-- [ ] 2.1.5 Create default TnS Appraisal Form V3.0 template in JSON
+- [x] 2.1.1 Create AppraisalTemplate entity and repository
+- [x] 2.1.2 Implement TemplateService (CRUD, versioning, activation)
+- [x] 2.1.3 Create TemplateController with /api/templates endpoints
+- [x] 2.1.4 Implement JSON schema validation for template structure
+- [x] 2.1.5 Create default TnS Appraisal Form V3.0 template in JSON
 
 ### 2.2 Cycle Module
-- [ ] 2.2.1 Create AppraisalCycle entity and repository
-- [ ] 2.2.2 Implement CycleService (CRUD, trigger, reopen)
-- [ ] 2.2.3 Create CycleController with /api/cycles endpoints
-- [ ] 2.2.4 Implement bulk cycle trigger logic
-- [ ] 2.2.5 Implement form reopen logic
-- [ ] 2.2.6 Implement backup reviewer assignment
+- [x] 2.2.1 Create AppraisalCycle entity and repository
+- [x] 2.2.2 Implement CycleService (CRUD, trigger, reopen)
+- [x] 2.2.3 Create CycleController with /api/cycles endpoints
+- [x] 2.2.4 Implement bulk cycle trigger logic
+- [x] 2.2.5 Implement form reopen logic
+- [x] 2.2.6 Implement backup reviewer assignment
 
 ### 2.3 Frontend Template Management
-- [ ] 2.3.1 Create template list component
-- [ ] 2.3.2 Create template viewer component (JSON display)
-- [ ] 2.3.3 Implement template activation UI
+- [x] 2.3.1 Create template list component
+- [x] 2.3.2 Create template viewer component (JSON display)
+- [x] 2.3.3 Implement template activation UI
 
 ### 2.4 Frontend Cycle Management (HR)
-- [ ] 2.4.1 Create cycle management dashboard
-- [ ] 2.4.2 Create cycle creation form
-- [ ] 2.4.3 Implement employee selection UI for cycle trigger
-- [ ] 2.4.4 Create bulk trigger confirmation dialog
-- [ ] 2.4.5 Implement form reopen UI
-- [ ] 2.4.6 Create backup reviewer assignment UI
+- [x] 2.4.1 Create cycle management dashboard
+- [x] 2.4.2 Create cycle creation form
+- [x] 2.4.3 Implement employee selection UI for cycle trigger
+- [x] 2.4.4 Create bulk trigger confirmation dialog
+- [x] 2.4.5 Implement form reopen UI
+- [x] 2.4.6 Create backup reviewer assignment UI
 
 ### 2.5 Testing - Cycle and Template
-- [ ] 2.5.1 Write property test: Cycle Trigger Creates Exactly One Form Per Employee (Property 6)
-- [ ] 2.5.2 Write property test: Form Reopen Resets Status (Property 8)
-- [ ] 2.5.3 Write property test: Historical Form Uses Correct Template Version (Property 10)
-- [ ] 2.5.4 Write property test: Bulk Trigger Partial Failure Resilience (Property 18)
-- [ ] 2.5.5 Write unit tests for TemplateService and CycleService
-- [ ] 2.5.6 Write integration tests for cycle trigger workflow
-- [ ] 2.5.7 Write Angular unit tests for cycle management components
+- [x] 2.5.1 Write property test: Cycle Trigger Creates Exactly One Form Per Employee (Property 6)
+- [x] 2.5.2 Write property test: Form Reopen Resets Status (Property 8)
+- [x] 2.5.3 Write property test: Historical Form Uses Correct Template Version (Property 10)
+- [x] 2.5.4 Write property test: Bulk Trigger Partial Failure Resilience (Property 18)
+- [x] 2.5.5 Write unit tests for TemplateService and CycleService
+- [x] 2.5.6 Write integration tests for cycle trigger workflow
+- [x] 2.5.7 Write Angular unit tests for cycle management components
 
 ---
 

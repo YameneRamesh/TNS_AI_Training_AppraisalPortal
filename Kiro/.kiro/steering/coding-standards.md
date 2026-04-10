@@ -1,6 +1,5 @@
 ---
 inclusion: auto
-description: Coding standards and best practices for Java/Spring Boot backend and Angular frontend development
 ---
 
 # Coding Standards

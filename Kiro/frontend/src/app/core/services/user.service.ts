@@ -1,37 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
-import { ApiResponse, PageResponse } from '../models/api-response.model';
+import { ApiResponse } from '../models/api-response.model';
 import { environment } from '../../../environments/environment';
-
-export interface UserCreateRequest {
-  employeeId: string;
-  fullName: string;
-  email: string;
-  password: string;
-  designation?: string;
-  department?: string;
-  managerId?: number;
-  roles: string[];
-}
-
-export interface UserUpdateRequest {
-  fullName?: string;
-  email?: string;
-  designation?: string;
-  department?: string;
-  managerId?: number;
-}
 
 export interface UserSearchParams {
   search?: string;
-  role?: string;
-  status?: string;
-  page?: number;
-  size?: number;
+  department?: string;
+  isActive?: boolean;
 }
 
+/**
+ * Service for managing users.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -41,30 +23,22 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Get paginated list of users with optional filters
+   * Get all users with optional filters
    */
-  getUsers(params: UserSearchParams = {}): Observable<PageResponse<User>> {
+  getUsers(params?: UserSearchParams): Observable<ApiResponse<User[]>> {
     let httpParams = new HttpParams();
     
-    if (params.search) {
-      httpParams = httpParams.set('searchTerm', params.search);
+    if (params?.search) {
+      httpParams = httpParams.set('search', params.search);
     }
-    if (params.role) {
-      httpParams = httpParams.set('role', params.role);
+    if (params?.department) {
+      httpParams = httpParams.set('department', params.department);
     }
-    if (params.status !== undefined && params.status !== '') {
-      httpParams = httpParams.set('isActive', params.status === 'active' ? 'true' : 'false');
-    }
-    if (params.page !== undefined) {
-      httpParams = httpParams.set('page', params.page.toString());
-    }
-    if (params.size !== undefined) {
-      httpParams = httpParams.set('size', params.size.toString());
+    if (params?.isActive !== undefined) {
+      httpParams = httpParams.set('isActive', params.isActive.toString());
     }
 
-    return this.http.get<ApiResponse<PageResponse<User>>>(this.API_URL, { params: httpParams }).pipe(
-      map(response => response.data ?? { content: [], totalElements: 0, pageNumber: 0, pageSize: 10, totalPages: 0, last: true })
-    );
+    return this.http.get<ApiResponse<User[]>>(this.API_URL, { params: httpParams });
   }
 
   /**
@@ -77,14 +51,14 @@ export class UserService {
   /**
    * Create new user
    */
-  createUser(user: UserCreateRequest): Observable<ApiResponse<User>> {
+  createUser(user: Partial<User>): Observable<ApiResponse<User>> {
     return this.http.post<ApiResponse<User>>(this.API_URL, user);
   }
 
   /**
    * Update existing user
    */
-  updateUser(id: number, user: UserUpdateRequest): Observable<ApiResponse<User>> {
+  updateUser(id: number, user: Partial<User>): Observable<ApiResponse<User>> {
     return this.http.put<ApiResponse<User>>(`${this.API_URL}/${id}`, user);
   }
 
@@ -96,23 +70,9 @@ export class UserService {
   }
 
   /**
-   * Reactivate user
+   * Assign roles to user
    */
-  reactivateUser(id: number): Observable<ApiResponse<void>> {
-    return this.http.patch<ApiResponse<void>>(`${this.API_URL}/${id}/reactivate`, {});
-  }
-
-  /**
-   * Assign roles to user — sends role names (strings) as backend expects
-   */
-  assignRoles(userId: number, roleNames: string[]): Observable<ApiResponse<User>> {
-    return this.http.post<ApiResponse<User>>(`${this.API_URL}/${userId}/roles`, { roles: roleNames });
-  }
-
-  /**
-   * Get all available roles
-   */
-  getRoles(): Observable<ApiResponse<{ id: number; name: string }[]>> {
-    return this.http.get<ApiResponse<{ id: number; name: string }[]>>(`${environment.apiUrl}/roles`);
+  assignRoles(userId: number, roleIds: number[]): Observable<ApiResponse<User>> {
+    return this.http.put<ApiResponse<User>>(`${this.API_URL}/${userId}/roles`, { roleIds });
   }
 }

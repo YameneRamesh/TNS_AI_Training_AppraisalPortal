@@ -1,6 +1,5 @@
 ---
 inclusion: auto
-description: Technology stack specifications including Java 21, Spring Boot, Angular 21, and MS SQL Server
 ---
 
 # Tech Stack

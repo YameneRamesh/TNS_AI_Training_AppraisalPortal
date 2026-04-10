@@ -1,0 +1,129 @@
+<div class="template-viewer-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading template...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-card>
+      <mat-card-content>
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          <p>{{ error }}</p>
+          <div class="error-actions">
+            <button mat-raised-button color="primary" (click)="goBack()">
+              <mat-icon>arrow_back</mat-icon>
+              Back to Templates
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Template Details -->
+  <div *ngIf="template && !loading && !error">
+    <!-- Header Card -->
+    <mat-card class="header-card">
+      <mat-card-header>
+        <mat-card-title>
+          <button mat-icon-button (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          Template Details
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="template-info">
+          <div class="info-row">
+            <span class="info-label">Version:</span>
+            <span class="info-value">{{ template.version }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Status:</span>
+            <mat-chip [color]="template.isActive ? 'primary' : 'default'" selected>
+              {{ template.isActive ? 'Active' : 'Inactive' }}
+            </mat-chip>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Created:</span>
+            <span class="info-value">{{ formatDate(template.createdAt) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Template ID:</span>
+            <span class="info-value">{{ template.id }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- JSON Display Card -->
+    <mat-card class="json-card">
+      <mat-card-header>
+        <mat-card-title>Template Schema (JSON)</mat-card-title>
+        <div class="header-actions">
+          <button 
+            mat-icon-button 
+            (click)="copyToClipboard()" 
+            matTooltip="Copy JSON to clipboard">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-tab-group>
+          <!-- Formatted View Tab -->
+          <mat-tab label="Formatted View">
+            <div class="json-container">
+              <pre class="json-display">{{ formattedJson }}</pre>
+            </div>
+          </mat-tab>
+
+          <!-- Structure Overview Tab -->
+          <mat-tab label="Structure Overview" *ngIf="parsedSchema">
+            <div class="structure-container">
+              <div *ngIf="parsedSchema.version" class="structure-item">
+                <strong>Schema Version:</strong> {{ parsedSchema.version }}
+              </div>
+              
+              <div *ngIf="parsedSchema.sections" class="sections-list">
+                <h3>Sections ({{ parsedSchema.sections.length }})</h3>
+                <div *ngFor="let section of parsedSchema.sections; let i = index" class="section-item">
+                  <div class="section-header">
+                    <mat-icon>folder</mat-icon>
+                    <strong>{{ i + 1 }}. {{ section.title || section.sectionType }}</strong>
+                  </div>
+                  <div class="section-details">
+                    <div><em>Type:</em> {{ section.sectionType }}</div>
+                    <div *ngIf="section.items">
+                      <em>Items:</em> {{ section.items.length }}
+                      <ul class="items-list">
+                        <li *ngFor="let item of section.items">
+                          {{ item.label || item.id }}
+                          <span class="rating-scale" *ngIf="item.ratingScale">
+                            ({{ item.ratingScale }})
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Raw JSON Tab -->
+          <mat-tab label="Raw JSON">
+            <div class="json-container">
+              <pre class="json-display raw">{{ template.schemaJson }}</pre>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

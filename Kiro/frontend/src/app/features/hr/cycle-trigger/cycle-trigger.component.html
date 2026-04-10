@@ -1,0 +1,147 @@
+<div class="cycle-trigger-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>play_circle</mat-icon>
+        Trigger Appraisal Cycle
+      </mat-card-title>
+      <mat-card-subtitle *ngIf="cycle">
+        {{ cycle.name }} ({{ formatDate(cycle.startDate) }} - {{ formatDate(cycle.endDate) }})
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Search and Selection Info -->
+      <div class="toolbar">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search Employees</mat-label>
+          <input 
+            matInput 
+            [formControl]="searchControl" 
+            placeholder="Search by name, ID, email, department...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button 
+            mat-icon-button 
+            matSuffix 
+            *ngIf="searchControl.value"
+            (click)="searchControl.setValue('')"
+            aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <div class="selection-info">
+          <mat-chip>{{ getSelectionText() }}</mat-chip>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading employees...</p>
+      </div>
+
+      <!-- Employee Table -->
+      <div class="table-container" *ngIf="!loading">
+        <table mat-table [dataSource]="filteredEmployees" class="employee-table">
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="$event ? toggleAllRows() : null"
+                [checked]="isAllSelected()"
+                [indeterminate]="isIndeterminate()"
+                [disabled]="filteredEmployees.length === 0">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Employee ID Column -->
+          <ng-container matColumnDef="employeeId">
+            <th mat-header-cell *matHeaderCellDef>Employee ID</th>
+            <td mat-cell *matCellDef="let employee">{{ employee.employeeId }}</td>
+          </ng-container>
+
+          <!-- Full Name Column -->
+          <ng-container matColumnDef="fullName">
+            <th mat-header-cell *matHeaderCellDef>Full Name</th>
+            <td mat-cell *matCellDef="let employee">{{ employee.fullName }}</td>
+          </ng-container>
+
+          <!-- Designation Column -->
+          <ng-container matColumnDef="designation">
+            <th mat-header-cell *matHeaderCellDef>Designation</th>
+            <td mat-cell *matCellDef="let employee">{{ employee.designation || '-' }}</td>
+          </ng-container>
+
+          <!-- Department Column -->
+          <ng-container matColumnDef="department">
+            <th mat-header-cell *matHeaderCellDef>Department</th>
+            <td mat-cell *matCellDef="let employee">{{ employee.department || '-' }}</td>
+          </ng-container>
+
+          <!-- Manager Column -->
+          <ng-container matColumnDef="managerName">
+            <th mat-header-cell *matHeaderCellDef>Manager</th>
+            <td mat-cell *matCellDef="let employee">{{ employee.managerName || '-' }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr 
+            mat-row 
+            *matRowDef="let row; columns: displayedColumns;"
+            (click)="selection.toggle(row)"
+            [class.selected-row]="selection.isSelected(row)">
+          </tr>
+
+          <!-- No Data Row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+              <div class="no-data-message">
+                <mat-icon>info</mat-icon>
+                <p *ngIf="searchControl.value">No employees found matching "{{ searchControl.value }}"</p>
+                <p *ngIf="!searchControl.value">No active employees available</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Info Message -->
+      <div class="info-message" *ngIf="!loading && filteredEmployees.length > 0">
+        <mat-icon>info</mat-icon>
+        <p>
+          Triggering the cycle will create appraisal forms for selected employees 
+          and send notification emails to them and their managers.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button 
+          mat-raised-button 
+          type="button" 
+          (click)="onCancel()"
+          [disabled]="triggering">
+          Cancel
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          (click)="onTrigger()"
+          [disabled]="triggering || selection.selected.length === 0">
+          <mat-spinner *ngIf="triggering" diameter="20" class="button-spinner"></mat-spinner>
+          <span *ngIf="!triggering">Trigger Cycle</span>
+          <span *ngIf="triggering">Triggering...</span>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
