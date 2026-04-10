@@ -5,27 +5,20 @@ export interface User {
   email: string;
   designation?: string;
   department?: string;
-  managerId?: number;
   managerName?: string;
-  isActive: boolean;
-  roles: Role[];
-  createdAt: string;
-  updatedAt: string;
+  isActive?: boolean;
+  roles: string[];
 }
 
-export interface Role {
-  id: number;
-  name: RoleName;
+export function getRoles(user: User): string[] {
+  if (!user.roles) return [];
+  if (Array.isArray(user.roles)) return user.roles;
+  return [];
 }
 
 export type RoleName = 'EMPLOYEE' | 'MANAGER' | 'HR' | 'ADMIN';
 
 export interface LoginRequest {
-  email: string;
+  loginIdentifier: string;
   password: string;
-}
-
-export interface LoginResponse {
-  user: User;
-  message: string;
 }

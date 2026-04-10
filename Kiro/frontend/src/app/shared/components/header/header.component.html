@@ -1,0 +1,81 @@
+<mat-toolbar class="app-header">
+  <button mat-icon-button class="menu-button" (click)="menuToggle.emit()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  
+  <div class="header-title">
+    <h1 class="title">TNS Appraisal Portal</h1>
+  </div>
+  
+  <span class="spacer"></span>
+  
+  @if (user) {
+    <div class="user-section">
+      <button mat-button class="user-profile-button" [matMenuTriggerFor]="userMenu">
+        <div class="user-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <div class="user-info">
+          <span class="user-name">{{ user.fullName }}</span>
+          <span class="user-role">{{ getPrimaryRole() }}</span>
+        </div>
+        <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+      </button>
+      
+      <mat-menu #userMenu="matMenu" class="user-menu">
+        <div class="user-menu-header">
+          <div class="user-menu-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="user-menu-details">
+            <p class="user-menu-name">{{ user.fullName }}</p>
+            <p class="user-menu-email">{{ user.email }}</p>
+            <p class="user-menu-id">ID: {{ user.employeeId }}</p>
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="user-menu-info">
+          <button mat-menu-item disabled class="info-item">
+            <mat-icon>badge</mat-icon>
+            <span>{{ user.designation || 'Not specified' }}</span>
+          </button>
+          <button mat-menu-item disabled class="info-item">
+            <mat-icon>business</mat-icon>
+            <span>{{ user.department || 'Not specified' }}</span>
+          </button>
+          @if (user.managerName) {
+            <button mat-menu-item disabled class="info-item">
+              <mat-icon>supervisor_account</mat-icon>
+              <span>Manager: {{ user.managerName }}</span>
+            </button>
+          }
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <div class="user-menu-roles">
+          <div class="roles-label">
+            <mat-icon>verified_user</mat-icon>
+            <span>Roles</span>
+          </div>
+          <div class="role-badges">
+            @for (role of getRoleBadges(); track role) {
+              <span class="role-badge" [class]="'role-' + role.toLowerCase()">
+                {{ role }}
+              </span>
+            }
+          </div>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <button mat-menu-item (click)="logout.emit()" class="logout-item">
+          <mat-icon>logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </mat-menu>
+    </div>
+  }
+</mat-toolbar>

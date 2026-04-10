@@ -1,0 +1,141 @@
+<div class="audit-container">
+  <div class="audit-header">
+    <div class="header-content">
+      <h1 class="audit-title">Audit Log</h1>
+      <p class="audit-subtitle">System activity and security audit trail</p>
+    </div>
+  </div>
+
+  <mat-card class="filter-card">
+    <div class="filter-section">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Action Type</mat-label>
+        <mat-select [formControl]="actionFilter">
+          <mat-option value="">All Actions</mat-option>
+          @for (action of availableActions; track action) {
+            <mat-option [value]="action">{{ action }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix>filter_list</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Start Date</mat-label>
+        <input matInput [matDatepicker]="startPicker" [formControl]="startDateFilter">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>End Date</mat-label>
+        <input matInput [matDatepicker]="endPicker" [formControl]="endDateFilter">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="clearFilters()" class="clear-button">
+        <mat-icon>clear</mat-icon>
+        Clear
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card class="table-card">
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Loading audit logs...</p>
+      </div>
+    } @else if (auditLogs.length === 0) {
+      <div class="empty-state">
+        <mat-icon>history</mat-icon>
+        <h3>No audit logs found</h3>
+        <p>Try adjusting your filters to see more results</p>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="auditLogs" class="audit-table">
+          <!-- Timestamp Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Timestamp</th>
+            <td mat-cell *matCellDef="let log">
+              <span class="timestamp">{{ formatDateTime(log.createdAt) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- User Column -->
+          <ng-container matColumnDef="userName">
+            <th mat-header-cell *matHeaderCellDef>User</th>
+            <td mat-cell *matCellDef="let log">
+              {{ log.userName || 'System' }}
+            </td>
+          </ng-container>
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <td mat-cell *matCellDef="let log">
+              <span class="action-badge" [class]="'action-' + getActionColor(log.action)">
+                {{ log.action }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Entity Type Column -->
+          <ng-container matColumnDef="entityType">
+            <th mat-header-cell *matHeaderCellDef>Entity Type</th>
+            <td mat-cell *matCellDef="let log">
+              {{ log.entityType || '-' }}
+            </td>
+          </ng-container>
+
+          <!-- Entity ID Column -->
+          <ng-container matColumnDef="entityId">
+            <th mat-header-cell *matHeaderCellDef>Entity ID</th>
+            <td mat-cell *matCellDef="let log">
+              <span class="entity-id">{{ log.entityId || '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- IP Address Column -->
+          <ng-container matColumnDef="ipAddress">
+            <th mat-header-cell *matHeaderCellDef>IP Address</th>
+            <td mat-cell *matCellDef="let log">
+              <span class="ip-address">{{ log.ipAddress || '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Details Column -->
+          <ng-container matColumnDef="details">
+            <th mat-header-cell *matHeaderCellDef>Details</th>
+            <td mat-cell *matCellDef="let log">
+              @if (log.details) {
+                <button 
+                  mat-icon-button 
+                  matTooltip="View details"
+                  [matTooltipPosition]="'left'"
+                  class="details-button">
+                  <mat-icon>info</mat-icon>
+                </button>
+              } @else {
+                <span class="no-details">-</span>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="totalLogs"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageIndex]="pageIndex"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  </mat-card>
+</div>

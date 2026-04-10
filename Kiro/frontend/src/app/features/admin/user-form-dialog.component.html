@@ -1,0 +1,133 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon>{{ data.mode === 'create' ? 'person_add' : 'edit' }}</mat-icon>
+  {{ getTitle() }}
+</h2>
+
+<mat-dialog-content class="dialog-content">
+  <form [formGroup]="userForm" class="user-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Employee ID</mat-label>
+      <input 
+        matInput 
+        formControlName="employeeId" 
+        placeholder="e.g., EMP-001"
+        [readonly]="data.mode === 'edit'">
+      <mat-icon matPrefix>badge</mat-icon>
+      <mat-hint>Unique identifier (uppercase letters, numbers, and hyphens)</mat-hint>
+      <mat-error *ngIf="userForm.get('employeeId')?.hasError('required')">
+        Employee ID is required
+      </mat-error>
+      <mat-error *ngIf="userForm.get('employeeId')?.hasError('pattern')">
+        Use only uppercase letters, numbers, and hyphens
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Full Name</mat-label>
+      <input matInput formControlName="fullName" placeholder="John Doe">
+      <mat-icon matPrefix>person</mat-icon>
+      <mat-error *ngIf="userForm.get('fullName')?.hasError('required')">
+        Full name is required
+      </mat-error>
+      <mat-error *ngIf="userForm.get('fullName')?.hasError('minlength')">
+        Name must be at least 2 characters
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" placeholder="john.doe@tns.com">
+      <mat-icon matPrefix>email</mat-icon>
+      <mat-error *ngIf="userForm.get('email')?.hasError('required')">
+        Email is required
+      </mat-error>
+      <mat-error *ngIf="userForm.get('email')?.hasError('email')">
+        Enter a valid email address
+      </mat-error>
+    </mat-form-field>
+
+    @if (data.mode === 'create') {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input 
+          matInput 
+          formControlName="password" 
+          [type]="hidePassword ? 'password' : 'text'"
+          placeholder="Minimum 8 characters">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button 
+          mat-icon-button 
+          matSuffix 
+          type="button"
+          (click)="togglePasswordVisibility()">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="userForm.get('password')?.hasError('required')">
+          Password is required
+        </mat-error>
+        <mat-error *ngIf="userForm.get('password')?.hasError('minlength')">
+          Password must be at least 8 characters
+        </mat-error>
+      </mat-form-field>
+    }
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Designation</mat-label>
+      <input matInput formControlName="designation" placeholder="e.g., Senior Developer">
+      <mat-icon matPrefix>work</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Department</mat-label>
+      <input matInput formControlName="department" placeholder="e.g., Engineering">
+      <mat-icon matPrefix>business</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Manager</mat-label>
+      <mat-select formControlName="managerId">
+        <mat-option [value]="null">No Manager</mat-option>
+        @for (manager of availableManagers; track manager.id) {
+          <mat-option [value]="manager.id">
+            {{ manager.fullName }} ({{ manager.employeeId }})
+          </mat-option>
+        }
+      </mat-select>
+      <mat-icon matPrefix>supervisor_account</mat-icon>
+    </mat-form-field>
+
+    @if (data.mode === 'create') {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Roles</mat-label>
+        <mat-select formControlName="roles" multiple>
+          <mat-option value="EMPLOYEE">Employee</mat-option>
+          <mat-option value="MANAGER">Manager</mat-option>
+          <mat-option value="HR">HR</mat-option>
+          <mat-option value="ADMIN">Admin</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>admin_panel_settings</mat-icon>
+        <mat-error *ngIf="userForm.get('roles')?.hasError('required')">
+          At least one role is required
+        </mat-error>
+      </mat-form-field>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions">
+  <button mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+    Cancel
+  </button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="onSubmit()" 
+    [disabled]="userForm.invalid || isLoading">
+    @if (isLoading) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <mat-icon>{{ data.mode === 'create' ? 'add' : 'save' }}</mat-icon>
+      <span>{{ data.mode === 'create' ? 'Create' : 'Save' }}</span>
+    }
+  </button>
+</mat-dialog-actions>

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
@@ -20,6 +21,12 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    private final SessionAuthFilter sessionAuthFilter;
+
+    public SecurityConfig(SessionAuthFilter sessionAuthFilter) {
+        this.sessionAuthFilter = sessionAuthFilter;
+    }
 
     /**
      * Configures HTTP security with session-based authentication.
@@ -96,6 +103,8 @@ public class SecurityConfig {
                 })
             );
         
+        http.addFilterBefore(sessionAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

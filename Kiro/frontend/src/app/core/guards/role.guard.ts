@@ -25,8 +25,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
         return false;
       }
 
-      const userRoles = user.roles.map(r => r.name);
-      const hasRequiredRole = requiredRoles.some(role => userRoles.includes(role));
+      const hasRequiredRole = requiredRoles.some(role => user.roles.includes(role));
 
       if (hasRequiredRole) {
         return true;

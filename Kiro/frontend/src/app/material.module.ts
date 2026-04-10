@@ -23,6 +23,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatDividerModule } from '@angular/material/divider';
 
 const materialModules = [
   MatButtonModule,
@@ -48,7 +50,9 @@ const materialModules = [
   MatChipsModule,
   MatTabsModule,
   MatExpansionModule,
-  MatTooltipModule
+  MatTooltipModule,
+  MatBadgeModule,
+  MatDividerModule
 ];
 
 @NgModule({

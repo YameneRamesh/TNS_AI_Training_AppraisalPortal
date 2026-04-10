@@ -39,6 +39,7 @@ CREATE TABLE reporting_hierarchy (
     effective_dt DATE      NOT NULL,
     end_dt       DATE,
     created_at   DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    updated_at   DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
     CONSTRAINT chk_reporting_dates CHECK (end_dt IS NULL OR end_dt >= effective_dt)
 );
 

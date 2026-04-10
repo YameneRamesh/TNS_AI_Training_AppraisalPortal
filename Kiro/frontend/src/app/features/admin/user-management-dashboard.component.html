@@ -1,0 +1,148 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">User Management</h1>
+      <p class="dashboard-subtitle">Manage users, roles, and permissions</p>
+    </div>
+    <button mat-raised-button color="primary" class="create-button" (click)="createUser()">
+      <mat-icon>add</mat-icon>
+      Create User
+    </button>
+  </div>
+
+  <mat-card class="filter-card">
+    <div class="filter-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Name, email, or employee ID">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Role</mat-label>
+        <mat-select [formControl]="roleFilter">
+          <mat-option value="">All Roles</mat-option>
+          <mat-option value="ADMIN">Admin</mat-option>
+          <mat-option value="HR">HR</mat-option>
+          <mat-option value="MANAGER">Manager</mat-option>
+          <mat-option value="EMPLOYEE">Employee</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Status</mat-label>
+        <mat-select [formControl]="statusFilter">
+          <mat-option value="">All Status</mat-option>
+          <mat-option value="active">Active</mat-option>
+          <mat-option value="inactive">Inactive</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="clearFilters()" class="clear-button">
+        <mat-icon>clear</mat-icon>
+        Clear
+      </button>
+    </div>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Loading users...</p>
+    </div>
+    <div *ngIf="!isLoading && users.length === 0" class="empty-state">
+      <mat-icon>people_outline</mat-icon>
+      <h3>No users found</h3>
+      <p>Try adjusting your filters or create a new user</p>
+    </div>
+    <div *ngIf="!isLoading && users.length > 0" class="table-container">
+        <table mat-table [dataSource]="users" class="users-table">
+          <!-- Employee ID Column -->
+          <ng-container matColumnDef="employeeId">
+            <th mat-header-cell *matHeaderCellDef>Employee ID</th>
+            <td mat-cell *matCellDef="let user">
+              <span class="employee-id">{{ user.employeeId }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Full Name Column -->
+          <ng-container matColumnDef="fullName">
+            <th mat-header-cell *matHeaderCellDef>Full Name</th>
+            <td mat-cell *matCellDef="let user">{{ user.fullName }}</td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+          </ng-container>
+
+          <!-- Designation Column -->
+          <ng-container matColumnDef="designation">
+            <th mat-header-cell *matHeaderCellDef>Designation</th>
+            <td mat-cell *matCellDef="let user">{{ user.designation || '-' }}</td>
+          </ng-container>
+
+          <!-- Department Column -->
+          <ng-container matColumnDef="department">
+            <th mat-header-cell *matHeaderCellDef>Department</th>
+            <td mat-cell *matCellDef="let user">{{ user.department || '-' }}</td>
+          </ng-container>
+
+          <!-- Roles Column -->
+          <ng-container matColumnDef="roles">
+            <th mat-header-cell *matHeaderCellDef>Roles</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="role-chips">
+                @for (role of getRolesArray(user.roles); track $index) {
+                  <span class="role-chip" [class]="'role-' + role.toLowerCase()">
+                    {{ role }}
+                  </span>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let user">
+              <span class="status-badge" [class.active]="user.isActive !== false" [class.inactive]="user.isActive === false">
+                {{ user.isActive !== false ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="action-buttons">
+                <button mat-icon-button matTooltip="Edit User" (click)="editUser(user)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Manage Roles" (click)="manageRoles(user)">
+                  <mat-icon>admin_panel_settings</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Toggle Status" (click)="toggleUserStatus(user)">
+                  <mat-icon>{{ user.isActive !== false ? 'block' : 'check_circle' }}</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="totalUsers"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        [pageIndex]="pageIndex"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+  </mat-card>
+</div>

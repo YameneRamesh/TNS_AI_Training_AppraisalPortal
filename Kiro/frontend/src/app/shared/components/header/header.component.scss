@@ -1,0 +1,243 @@
+.app-header {
+  background: linear-gradient(90deg, var(--color-primary-900, #0A1628) 0%, var(--color-primary-800, #0F2240) 100%);
+  color: white;
+  height: 64px;
+  padding: 0 var(--space-6, 1.5rem);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(10, 22, 40, 0.08));
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.menu-button {
+  color: white;
+  margin-right: var(--space-4, 1rem);
+}
+
+.header-title {
+  .title {
+    font-family: var(--font-display, 'Clash Display', sans-serif);
+    font-size: var(--text-xl, 1.25rem);
+    font-weight: var(--font-bold, 700);
+    margin: 0;
+    letter-spacing: var(--tracking-tight, -0.02em);
+    color: white;
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+}
+
+.user-profile-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border-radius: 8px;
+  transition: all var(--transition-base, 200ms cubic-bezier(0.4, 0, 0.2, 1));
+  color: white;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .user-avatar {
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: var(--color-accent-400, #FBBF24);
+    }
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+
+    .user-name {
+      font-family: var(--font-body, 'General Sans', sans-serif);
+      font-size: var(--text-sm, 0.875rem);
+      font-weight: var(--font-semibold, 600);
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-family: var(--font-body, 'General Sans', sans-serif);
+      font-size: var(--text-xs, 0.75rem);
+      font-weight: var(--font-regular, 400);
+      color: var(--color-accent-300, #FCD34D);
+      line-height: 1.2;
+    }
+  }
+
+  .dropdown-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+::ng-deep .user-menu {
+  .mat-mdc-menu-content {
+    padding: 0;
+  }
+
+  .user-menu-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4, 1rem);
+    padding: var(--space-6, 1.5rem);
+    background: linear-gradient(135deg, var(--color-primary-900, #0A1628) 0%, var(--color-primary-700, #152E54) 100%);
+    color: white;
+
+    .user-menu-avatar {
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: var(--color-accent-400, #FBBF24);
+      }
+    }
+
+    .user-menu-details {
+      flex: 1;
+
+      .user-menu-name {
+        font-family: var(--font-body, 'General Sans', sans-serif);
+        font-size: var(--text-base, 1rem);
+        font-weight: var(--font-semibold, 600);
+        margin: 0 0 var(--space-1, 0.25rem) 0;
+      }
+
+      .user-menu-email {
+        font-family: var(--font-body, 'General Sans', sans-serif);
+        font-size: var(--text-xs, 0.75rem);
+        color: var(--color-accent-200, #FDE68A);
+        margin: 0 0 var(--space-1, 0.25rem) 0;
+      }
+
+      .user-menu-id {
+        font-family: var(--font-mono, 'JetBrains Mono', monospace);
+        font-size: var(--text-xs, 0.75rem);
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0;
+      }
+    }
+  }
+
+  .user-menu-info {
+    padding: var(--space-2, 0.5rem) 0;
+
+    .info-item {
+      padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
+      font-family: var(--font-body, 'General Sans', sans-serif);
+      font-size: var(--text-sm, 0.875rem);
+      color: var(--color-neutral-700, #374151);
+
+      mat-icon {
+        color: var(--color-neutral-500, #6B7280);
+        margin-right: var(--space-3, 0.75rem);
+      }
+
+      &.mdc-list-item--disabled {
+        opacity: 1;
+      }
+    }
+  }
+
+  .user-menu-roles {
+    padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
+
+    .roles-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2, 0.5rem);
+      font-family: var(--font-body, 'General Sans', sans-serif);
+      font-size: var(--text-xs, 0.75rem);
+      font-weight: var(--font-semibold, 600);
+      color: var(--color-neutral-600, #4B5563);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wide, 0.025em);
+      margin-bottom: var(--space-2, 0.5rem);
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .role-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2, 0.5rem);
+
+      .role-badge {
+        display: inline-block;
+        padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+        border-radius: 12px;
+        font-family: var(--font-body, 'General Sans', sans-serif);
+        font-size: var(--text-xs, 0.75rem);
+        font-weight: var(--font-medium, 500);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wide, 0.025em);
+
+        &.role-admin {
+          background-color: var(--color-danger-light, #FEE2E2);
+          color: var(--color-danger, #DC2626);
+        }
+
+        &.role-hr {
+          background-color: var(--color-info-light, #DBEAFE);
+          color: var(--color-info, #2563EB);
+        }
+
+        &.role-manager {
+          background-color: var(--color-accent-100, #FEF3C7);
+          color: var(--color-accent-700, #B45309);
+        }
+
+        &.role-employee {
+          background-color: var(--color-success-light, #D1FAE5);
+          color: var(--color-success, #059669);
+        }
+      }
+    }
+  }
+
+  .logout-item {
+    padding: var(--space-4, 1rem) var(--space-6, 1.5rem);
+    font-family: var(--font-body, 'General Sans', sans-serif);
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: var(--font-semibold, 600);
+    color: var(--color-danger, #DC2626);
+
+    mat-icon {
+      color: var(--color-danger, #DC2626);
+      margin-right: var(--space-3, 0.75rem);
+    }
+
+    &:hover {
+      background-color: var(--color-danger-light, #FEE2E2);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .user-info {
+    display: none !important;
+  }
+
+  .user-profile-button {
+    padding: var(--space-2, 0.5rem);
+  }
+}

@@ -28,7 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
             .allowCredentials(true)
             
             // Allow standard HTTP methods
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             
             // Allow common headers
             .allowedHeaders("*")
