@@ -1,0 +1,499 @@
+{
+  "version": "3.0",
+  "name": "TnS Appraisal Form V3.0 (2025-26)",
+  "description": "Think n Solutions Annual Performance Appraisal Form",
+  "sections": [
+    {
+      "sectionType": "header",
+      "title": "Appraisal Header",
+      "fields": [
+        {
+          "id": "teamMemberName",
+          "label": "Team Member Name",
+          "type": "text",
+          "readOnly": true,
+          "source": "employee.fullName"
+        },
+        {
+          "id": "dateOfHire",
+          "label": "Date of Hire",
+          "type": "date",
+          "readOnly": true,
+          "source": "employee.dateOfHire"
+        },
+        {
+          "id": "designation",
+          "label": "Designation",
+          "type": "text",
+          "readOnly": true,
+          "source": "employee.designation"
+        },
+        {
+          "id": "dateOfReview",
+          "label": "Date of Review",
+          "type": "date",
+          "readOnly": false
+        },
+        {
+          "id": "managerName",
+          "label": "Manager Name",
+          "type": "text",
+          "readOnly": true,
+          "source": "manager.fullName"
+        },
+        {
+          "id": "reviewPeriod",
+          "label": "Review Period",
+          "type": "text",
+          "readOnly": false
+        },
+        {
+          "id": "typeOfReview",
+          "label": "Type of Review",
+          "type": "text",
+          "readOnly": false,
+          "defaultValue": "Annual"
+        }
+      ]
+    },
+    {
+      "sectionType": "rating_key",
+      "title": "Rating Key",
+      "description": "Performance rating scale definitions",
+      "ratings": [
+        {
+          "value": "Excels",
+          "description": "Consistently exceeds expectations and demonstrates exceptional performance"
+        },
+        {
+          "value": "Exceeds",
+          "description": "Frequently exceeds expectations and shows strong performance"
+        },
+        {
+          "value": "Meets",
+          "description": "Consistently meets expectations and performs satisfactorily"
+        },
+        {
+          "value": "Developing",
+          "description": "Performance is below expectations and requires improvement"
+        }
+      ]
+    },
+    {
+      "sectionType": "overall_evaluation",
+      "title": "Overall Evaluation Rating",
+      "fields": [
+        {
+          "id": "managerComments",
+          "label": "Manager's Comments",
+          "type": "textarea",
+          "editableBy": "manager",
+          "required": true
+        },
+        {
+          "id": "teamMemberComments",
+          "label": "Team Member's Comments",
+          "type": "textarea",
+          "editableBy": "employee",
+          "required": false
+        }
+      ]
+    },
+    {
+      "sectionType": "key_responsibilities",
+      "title": "Key Responsibilities",
+      "description": "List 3 to 5 essential duties and evaluate performance",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": [
+        {
+          "id": "kr_1",
+          "label": "Key Responsibility 1",
+          "fields": [
+            {
+              "id": "selfComment",
+              "label": "Team Member Comment",
+              "type": "textarea",
+              "editableBy": "employee",
+              "required": true
+            },
+            {
+              "id": "selfRating",
+              "label": "Self Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "employee",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            },
+            {
+              "id": "managerComment",
+              "label": "Manager Comment",
+              "type": "textarea",
+              "editableBy": "manager",
+              "required": true
+            },
+            {
+              "id": "managerRating",
+              "label": "Manager Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "manager",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            }
+          ]
+        },
+        {
+          "id": "kr_2",
+          "label": "Key Responsibility 2",
+          "fields": [
+            {
+              "id": "selfComment",
+              "label": "Team Member Comment",
+              "type": "textarea",
+              "editableBy": "employee",
+              "required": true
+            },
+            {
+              "id": "selfRating",
+              "label": "Self Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "employee",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            },
+            {
+              "id": "managerComment",
+              "label": "Manager Comment",
+              "type": "textarea",
+              "editableBy": "manager",
+              "required": true
+            },
+            {
+              "id": "managerRating",
+              "label": "Manager Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "manager",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            }
+          ]
+        },
+        {
+          "id": "kr_3",
+          "label": "Key Responsibility 3",
+          "fields": [
+            {
+              "id": "selfComment",
+              "label": "Team Member Comment",
+              "type": "textarea",
+              "editableBy": "employee",
+              "required": true
+            },
+            {
+              "id": "selfRating",
+              "label": "Self Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "employee",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            },
+            {
+              "id": "managerComment",
+              "label": "Manager Comment",
+              "type": "textarea",
+              "editableBy": "manager",
+              "required": true
+            },
+            {
+              "id": "managerRating",
+              "label": "Manager Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "manager",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionType": "idp",
+      "title": "Individual Development Plan (IDP) - Ownership and Development",
+      "description": "Evaluate development in key areas",
+      "items": [
+        {
+          "id": "idp_nextgen",
+          "label": "NextGen Tech Skills",
+          "fields": [
+            {
+              "id": "selfComment",
+              "label": "Team Member Comment",
+              "type": "textarea",
+              "editableBy": "employee",
+              "required": true
+            },
+            {
+              "id": "selfRating",
+              "label": "Self Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "employee",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            },
+            {
+              "id": "managerComment",
+              "label": "Manager Comment",
+              "type": "textarea",
+              "editableBy": "manager",
+              "required": true
+            },
+            {
+              "id": "managerRating",
+              "label": "Manager Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "manager",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            }
+          ]
+        },
+        {
+          "id": "idp_value",
+          "label": "Value Addition",
+          "fields": [
+            {
+              "id": "selfComment",
+              "label": "Team Member Comment",
+              "type": "textarea",
+              "editableBy": "employee",
+              "required": true
+            },
+            {
+              "id": "selfRating",
+              "label": "Self Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "employee",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            },
+            {
+              "id": "managerComment",
+              "label": "Manager Comment",
+              "type": "textarea",
+              "editableBy": "manager",
+              "required": true
+            },
+            {
+              "id": "managerRating",
+              "label": "Manager Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "manager",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            }
+          ]
+        },
+        {
+          "id": "idp_leadership",
+          "label": "Leadership",
+          "fields": [
+            {
+              "id": "selfComment",
+              "label": "Team Member Comment",
+              "type": "textarea",
+              "editableBy": "employee",
+              "required": true
+            },
+            {
+              "id": "selfRating",
+              "label": "Self Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "employee",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            },
+            {
+              "id": "managerComment",
+              "label": "Manager Comment",
+              "type": "textarea",
+              "editableBy": "manager",
+              "required": true
+            },
+            {
+              "id": "managerRating",
+              "label": "Manager Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "manager",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionType": "policy_adherence",
+      "title": "Company Policies and Business Continuity Support Adherence",
+      "description": "Rate adherence on a scale of 1 to 10",
+      "items": [
+        {
+          "id": "policy_hr",
+          "label": "Follow HR Policy",
+          "fields": [
+            {
+              "id": "managerRating",
+              "label": "Manager Rating (1-10)",
+              "type": "rating",
+              "ratingScale": "policy_1_10",
+              "editableBy": "manager",
+              "required": true,
+              "min": 1,
+              "max": 10
+            }
+          ]
+        },
+        {
+          "id": "policy_availability",
+          "label": "Team Member Availability During Critical Deliverables",
+          "fields": [
+            {
+              "id": "managerRating",
+              "label": "Manager Rating (1-10)",
+              "type": "rating",
+              "ratingScale": "policy_1_10",
+              "editableBy": "manager",
+              "required": true,
+              "min": 1,
+              "max": 10
+            }
+          ]
+        },
+        {
+          "id": "policy_support",
+          "label": "Additional Support Beyond Regular Work Assignments",
+          "fields": [
+            {
+              "id": "managerRating",
+              "label": "Manager Rating (1-10)",
+              "type": "rating",
+              "ratingScale": "policy_1_10",
+              "editableBy": "manager",
+              "required": true,
+              "min": 1,
+              "max": 10
+            }
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "id": "managerComments",
+          "label": "Manager's Comments",
+          "type": "textarea",
+          "editableBy": "manager",
+          "required": false
+        }
+      ]
+    },
+    {
+      "sectionType": "goals",
+      "title": "Goals (Carried Over from Previous Year)",
+      "description": "Review and evaluate goals from the previous appraisal cycle",
+      "items": [
+        {
+          "id": "goal_1",
+          "label": "Goal 1",
+          "fields": [
+            {
+              "id": "selfComment",
+              "label": "Team Member Comment",
+              "type": "textarea",
+              "editableBy": "employee",
+              "required": true
+            },
+            {
+              "id": "selfRating",
+              "label": "Self Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "employee",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            },
+            {
+              "id": "managerComment",
+              "label": "Manager Comment",
+              "type": "textarea",
+              "editableBy": "manager",
+              "required": true
+            },
+            {
+              "id": "managerRating",
+              "label": "Manager Rating",
+              "type": "rating",
+              "ratingScale": "competency",
+              "editableBy": "manager",
+              "required": true,
+              "options": ["Excels", "Exceeds", "Meets", "Developing"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionType": "next_year_goals",
+      "title": "Next Year Goals",
+      "description": "Document objectives for the upcoming appraisal cycle",
+      "fields": [
+        {
+          "id": "nextYearGoals",
+          "label": "Goals for Next Year",
+          "type": "textarea",
+          "editableBy": "employee",
+          "required": true,
+          "placeholder": "List your goals and objectives for the next appraisal period"
+        }
+      ]
+    },
+    {
+      "sectionType": "signature",
+      "title": "Signatures and Acknowledgement",
+      "fields": [
+        {
+          "id": "preparedBy",
+          "label": "Prepared/Delivered By",
+          "type": "text",
+          "editableBy": "manager",
+          "required": true
+        },
+        {
+          "id": "reviewedBy",
+          "label": "Reviewed By",
+          "type": "text",
+          "editableBy": "manager",
+          "required": true
+        },
+        {
+          "id": "teamMemberAcknowledgement",
+          "label": "Team Member Acknowledgement",
+          "type": "text",
+          "editableBy": "employee",
+          "required": true,
+          "placeholder": "I acknowledge that I have reviewed this appraisal"
+        }
+      ]
+    }
+  ]
+}

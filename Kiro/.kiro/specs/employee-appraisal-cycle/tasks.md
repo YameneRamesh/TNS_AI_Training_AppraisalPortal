@@ -85,41 +85,41 @@ This phase must be completed first by the lead developer before other phases can
 ## Phase 2: Appraisal Cycle and Template Management (Developer 2)
 
 ### 2.1 Template Module
-- [ ] 2.1.1 Create AppraisalTemplate entity and repository
-- [ ] 2.1.2 Implement TemplateService (CRUD, versioning, activation)
-- [ ] 2.1.3 Create TemplateController with /api/templates endpoints
-- [ ] 2.1.4 Implement JSON schema validation for template structure
-- [ ] 2.1.5 Create default TnS Appraisal Form V3.0 template in JSON
+- [x] 2.1.1 Create AppraisalTemplate entity and repository
+- [x] 2.1.2 Implement TemplateService (CRUD, versioning, activation)
+- [x] 2.1.3 Create TemplateController with /api/templates endpoints
+- [x] 2.1.4 Implement JSON schema validation for template structure
+- [x] 2.1.5 Create default TnS Appraisal Form V3.0 template in JSON
 
 ### 2.2 Cycle Module
-- [ ] 2.2.1 Create AppraisalCycle entity and repository
-- [ ] 2.2.2 Implement CycleService (CRUD, trigger, reopen)
-- [ ] 2.2.3 Create CycleController with /api/cycles endpoints
-- [ ] 2.2.4 Implement bulk cycle trigger logic
-- [ ] 2.2.5 Implement form reopen logic
-- [ ] 2.2.6 Implement backup reviewer assignment
+- [x] 2.2.1 Create AppraisalCycle entity and repository
+- [x] 2.2.2 Implement CycleService (CRUD, trigger, reopen)
+- [x] 2.2.3 Create CycleController with /api/cycles endpoints
+- [x] 2.2.4 Implement bulk cycle trigger logic
+- [x] 2.2.5 Implement form reopen logic
+- [x] 2.2.6 Implement backup reviewer assignment
 
 ### 2.3 Frontend Template Management
-- [ ] 2.3.1 Create template list component
-- [ ] 2.3.2 Create template viewer component (JSON display)
-- [ ] 2.3.3 Implement template activation UI
+- [x] 2.3.1 Create template list component
+- [x] 2.3.2 Create template viewer component (JSON display)
+- [x] 2.3.3 Implement template activation UI
 
 ### 2.4 Frontend Cycle Management (HR)
-- [ ] 2.4.1 Create cycle management dashboard
-- [ ] 2.4.2 Create cycle creation form
-- [ ] 2.4.3 Implement employee selection UI for cycle trigger
-- [ ] 2.4.4 Create bulk trigger confirmation dialog
-- [ ] 2.4.5 Implement form reopen UI
-- [ ] 2.4.6 Create backup reviewer assignment UI
+- [x] 2.4.1 Create cycle management dashboard
+- [x] 2.4.2 Create cycle creation form
+- [x] 2.4.3 Implement employee selection UI for cycle trigger
+- [x] 2.4.4 Create bulk trigger confirmation dialog
+- [x] 2.4.5 Implement form reopen UI
+- [x] 2.4.6 Create backup reviewer assignment UI
 
 ### 2.5 Testing - Cycle and Template
-- [ ] 2.5.1 Write property test: Cycle Trigger Creates Exactly One Form Per Employee (Property 6)
-- [ ] 2.5.2 Write property test: Form Reopen Resets Status (Property 8)
-- [ ] 2.5.3 Write property test: Historical Form Uses Correct Template Version (Property 10)
-- [ ] 2.5.4 Write property test: Bulk Trigger Partial Failure Resilience (Property 18)
-- [ ] 2.5.5 Write unit tests for TemplateService and CycleService
-- [ ] 2.5.6 Write integration tests for cycle trigger workflow
-- [ ] 2.5.7 Write Angular unit tests for cycle management components
+- [x] 2.5.1 Write property test: Cycle Trigger Creates Exactly One Form Per Employee (Property 6)
+- [x] 2.5.2 Write property test: Form Reopen Resets Status (Property 8)
+- [x] 2.5.3 Write property test: Historical Form Uses Correct Template Version (Property 10)
+- [x] 2.5.4 Write property test: Bulk Trigger Partial Failure Resilience (Property 18)
+- [x] 2.5.5 Write unit tests for TemplateService and CycleService
+- [x] 2.5.6 Write integration tests for cycle trigger workflow
+- [x] 2.5.7 Write Angular unit tests for cycle management components
 
 ---
 

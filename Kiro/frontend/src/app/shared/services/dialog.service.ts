@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../components/confirm-dialog/confirm-dialog.component';
@@ -10,18 +10,18 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../components/confirm
   providedIn: 'root'
 })
 export class DialogService {
-  constructor(private dialog: MatDialog) {}
+  private dialog = inject(MatDialog);
 
   /**
    * Show a confirmation dialog
    */
   confirm(data: ConfirmDialogData): Observable<boolean> {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const dialogRef = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
       width: '400px',
       data
     });
 
-    return dialogRef.afterClosed();
+    return dialogRef.afterClosed() as Observable<boolean>;
   }
 
   /**

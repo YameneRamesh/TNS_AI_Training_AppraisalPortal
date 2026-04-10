@@ -10,15 +10,14 @@ CREATE TABLE appraisal_templates (
     schema_json NVARCHAR(MAX) NOT NULL,
     is_active   BIT           NOT NULL DEFAULT 0,
     created_by  BIGINT        REFERENCES users(id),
-    created_at  DATETIME2     NOT NULL DEFAULT GETUTCDATE(),
-    CONSTRAINT chk_only_one_active_template CHECK (
-        is_active = 0 OR 
-        NOT EXISTS (
-            SELECT 1 FROM appraisal_templates t2 
-            WHERE t2.is_active = 1 AND t2.id != appraisal_templates.id
-        )
-    )
+    created_at  DATETIME2     NOT NULL DEFAULT GETUTCDATE()
 );
+
+-- Create unique index to ensure only one active template
+-- This replaces the CHECK constraint which doesn't support subqueries in SQL Server
+CREATE UNIQUE INDEX idx_appraisal_templates_single_active 
+ON appraisal_templates(is_active) 
+WHERE is_active = 1;
 
 -- Create appraisal_cycles table
 CREATE TABLE appraisal_cycles (

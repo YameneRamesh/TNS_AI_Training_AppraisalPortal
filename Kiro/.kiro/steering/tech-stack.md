@@ -1,3 +1,7 @@
+---
+inclusion: auto
+---
+
 # Tech Stack
 
 Use the following technology stack for all implementations:

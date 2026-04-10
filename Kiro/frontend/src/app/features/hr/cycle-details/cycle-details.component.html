@@ -1,0 +1,160 @@
+<div class="cycle-details-container">
+  <mat-card>
+    <mat-card-header>
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <mat-card-title>
+        <mat-icon>assignment</mat-icon>
+        Cycle Details
+      </mat-card-title>
+      <mat-card-subtitle *ngIf="cycle">
+        {{ cycle.name }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Cycle Info -->
+      <div class="cycle-info" *ngIf="cycle">
+        <div class="info-row">
+          <span class="label">Period:</span>
+          <span class="value">{{ formatDate(cycle.startDate) }} - {{ formatDate(cycle.endDate) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Status:</span>
+          <mat-chip [color]="getStatusColor(cycle.status)">{{ cycle.status }}</mat-chip>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="toolbar">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search Forms</mat-label>
+          <input 
+            matInput 
+            [formControl]="searchControl" 
+            placeholder="Search by employee, manager, status...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button 
+            mat-icon-button 
+            matSuffix 
+            *ngIf="searchControl.value"
+            (click)="searchControl.setValue('')"
+            aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading forms...</p>
+      </div>
+
+      <!-- Forms Table -->
+      <div class="table-container" *ngIf="!loading">
+        <table mat-table [dataSource]="filteredForms" class="forms-table">
+          <!-- Employee Name Column -->
+          <ng-container matColumnDef="employeeName">
+            <th mat-header-cell *matHeaderCellDef>Employee</th>
+            <td mat-cell *matCellDef="let form">{{ form.employeeName }}</td>
+          </ng-container>
+
+          <!-- Employee ID Column -->
+          <ng-container matColumnDef="employeeId">
+            <th mat-header-cell *matHeaderCellDef>Employee ID</th>
+            <td mat-cell *matCellDef="let form">{{ form.employeeId }}</td>
+          </ng-container>
+
+          <!-- Manager Column -->
+          <ng-container matColumnDef="managerName">
+            <th mat-header-cell *matHeaderCellDef>Manager</th>
+            <td mat-cell *matCellDef="let form">{{ form.managerName || '-' }}</td>
+          </ng-container>
+
+          <!-- Backup Reviewer Column -->
+          <ng-container matColumnDef="backupReviewerName">
+            <th mat-header-cell *matHeaderCellDef>Backup Reviewer</th>
+            <td mat-cell *matCellDef="let form">
+              <span *ngIf="form.backupReviewerName">{{ form.backupReviewerName }}</span>
+              <span *ngIf="!form.backupReviewerName" class="not-assigned">Not assigned</span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let form">
+              <mat-chip [color]="getStatusColor(form.status)">
+                {{ formatStatus(form.status) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Submitted At Column -->
+          <ng-container matColumnDef="submittedAt">
+            <th mat-header-cell *matHeaderCellDef>Submitted</th>
+            <td mat-cell *matCellDef="let form">{{ formatDate(form.submittedAt) }}</td>
+          </ng-container>
+
+          <!-- Reviewed At Column -->
+          <ng-container matColumnDef="reviewedAt">
+            <th mat-header-cell *matHeaderCellDef>Reviewed</th>
+            <td mat-cell *matCellDef="let form">{{ formatDate(form.reviewedAt) }}</td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let form">
+              <button 
+                mat-icon-button 
+                [matMenuTriggerFor]="menu"
+                aria-label="Form actions">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item>
+                  <mat-icon>visibility</mat-icon>
+                  <span>View Form</span>
+                </button>
+                <button 
+                  mat-menu-item 
+                  (click)="assignBackupReviewer(form)">
+                  <mat-icon>person_add</mat-icon>
+                  <span>Assign Backup Reviewer</span>
+                </button>
+                <button 
+                  mat-menu-item 
+                  (click)="reopenForm(form)"
+                  [disabled]="!canReopen(form)">
+                  <mat-icon>lock_open</mat-icon>
+                  <span>Reopen Form</span>
+                </button>
+                <button mat-menu-item *ngIf="form.pdfStoragePath">
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <span>Download PDF</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- No Data Row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+              <div class="no-data-message">
+                <mat-icon>info</mat-icon>
+                <p *ngIf="searchControl.value">No forms found matching "{{ searchControl.value }}"</p>
+                <p *ngIf="!searchControl.value">No forms available for this cycle</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

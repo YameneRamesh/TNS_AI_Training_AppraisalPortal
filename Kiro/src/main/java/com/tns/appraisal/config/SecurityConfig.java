@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,7 +19,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
  */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+// @EnableMethodSecurity // Disabled for development - re-enable when authentication is implemented
 public class SecurityConfig {
 
     /**
@@ -32,16 +33,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // Enable CORS - delegates to WebMvcConfig.addCorsMappings()
+            .cors(Customizer.withDefaults())
+
             // Disable CSRF for POC environment
             .csrf(csrf -> csrf.disable())
             
             // Configure authorization rules
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints
-                .requestMatchers("/api/auth/login").permitAll()
-                
-                // All other endpoints require authentication
-                .anyRequest().authenticated()
+                // All endpoints are publicly accessible for development testing
+                .anyRequest().permitAll()
             )
             
             // Configure session management with 15-minute timeout

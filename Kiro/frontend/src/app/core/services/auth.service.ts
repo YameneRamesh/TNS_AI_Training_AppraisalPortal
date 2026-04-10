@@ -21,7 +21,7 @@ export class AuthService {
   );
 
   constructor(private http: HttpClient) {
-    this.checkAuthStatus();
+    // this.checkAuthStatus(); // Disabled for development
   }
 
   /**
