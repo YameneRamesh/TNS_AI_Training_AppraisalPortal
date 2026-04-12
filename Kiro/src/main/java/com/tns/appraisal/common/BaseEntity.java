@@ -9,10 +9,10 @@ import java.time.Instant;
 @MappedSuperclass
 public abstract class BaseEntity {
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime2")
     private Instant createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "datetime2")
     private Instant updatedAt;
 
     @PrePersist

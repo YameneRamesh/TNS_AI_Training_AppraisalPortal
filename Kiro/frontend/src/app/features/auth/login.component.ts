@@ -53,22 +53,24 @@ export class LoginComponent {
     this.errorMessage = '';
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: (user) => {
+      next: (response) => {
         this.isLoading = false;
-        // Navigate based on user role
-        if (user.roles.includes('ADMIN')) {
-          this.router.navigate(['/admin']);
-        } else if (user.roles.includes('HR')) {
-          this.router.navigate(['/hr']);
-        } else if (user.roles.includes('MANAGER')) {
+        const roles = response.data?.roles || [];
+        if (roles.includes('ADMIN')) {
+          this.router.navigate(['/admin/users']);
+        } else if (roles.includes('HR')) {
+          this.router.navigate(['/hr/cycles']);
+        } else if (roles.includes('MANAGER')) {
           this.router.navigate(['/manager']);
+        } else if (roles.includes('EMPLOYEE')) {
+          this.router.navigate(['/employee']);
         } else {
           this.router.navigate(['/employee']);
         }
       },
-      error: (error) => {
+      error: (err: any) => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Invalid credentials. Please try again.';
+        this.errorMessage = err.error?.message || 'Invalid credentials. Please try again.';
         this.cdr.detectChanges();
       }
     });

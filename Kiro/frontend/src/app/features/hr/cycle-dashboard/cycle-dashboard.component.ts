@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -48,7 +48,8 @@ export class CycleDashboardComponent implements OnInit {
     private dashboardService: DashboardService,
     private cycleService: CycleService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -56,37 +57,36 @@ export class CycleDashboardComponent implements OnInit {
     this.loadCycles();
   }
 
-  /**
-   * Load HR dashboard data
-   */
   loadDashboard(): void {
-    this.loading = true;
-    this.error = null;
-
     this.dashboardService.getHRDashboard().subscribe({
       next: (response) => {
         this.dashboardData = response.data || null;
-        this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.error = 'Failed to load dashboard data. Please try again.';
-        this.loading = false;
         console.error('Error loading HR dashboard:', err);
+        this.snackBar.open('Failed to load dashboard metrics', 'Close', { duration: 3000 });
+        this.cdr.detectChanges();
       }
     });
   }
 
-  /**
-   * Load all cycles
-   */
   loadCycles(): void {
+    this.loading = true;
+    this.error = null;
+
     this.cycleService.getCycles().subscribe({
       next: (response) => {
         this.cycles = response.data || [];
+        this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
+        this.error = 'Failed to load cycles. Please try again.';
+        this.loading = false;
         console.error('Error loading cycles:', err);
         this.snackBar.open('Failed to load cycles', 'Close', { duration: 3000 });
+        this.cdr.detectChanges();
       }
     });
   }

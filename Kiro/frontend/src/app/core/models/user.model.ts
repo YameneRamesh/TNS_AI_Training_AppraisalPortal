@@ -21,11 +21,17 @@ export interface Role {
 export type RoleName = 'EMPLOYEE' | 'MANAGER' | 'HR' | 'ADMIN';
 
 export interface LoginRequest {
-  email: string;
+  loginIdentifier: string;
   password: string;
 }
 
-export interface LoginResponse {
-  user: User;
-  message: string;
+export interface UserProfile {
+  id: number;
+  employeeId: string;
+  fullName: string;
+  email: string;
+  designation?: string;
+  department?: string;
+  managerName?: string;
+  roles: string[];
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AppraisalCycle } from '../models/appraisal.model';
+import { AppraisalCycle, AppraisalForm } from '../models/appraisal.model';
 import { ApiResponse } from '../models/api-response.model';
 import { environment } from '../../../environments/environment';
 
@@ -10,13 +10,12 @@ export interface TriggerCycleRequest {
 }
 
 export interface TriggerCycleResult {
+  totalEmployees: number;
   successCount: number;
   failureCount: number;
-  totalCount: number;
   failures: Array<{
     employeeId: number;
-    employeeName: string;
-    reason: string;
+    errorReason: string;
   }>;
 }
 
@@ -64,6 +63,20 @@ export class CycleService {
    */
   triggerCycle(cycleId: number, request: TriggerCycleRequest): Observable<ApiResponse<TriggerCycleResult>> {
     return this.http.post<ApiResponse<TriggerCycleResult>>(`${this.API_URL}/${cycleId}/trigger`, request);
+  }
+
+  /**
+   * Delete a cycle (DRAFT only)
+   */
+  deleteCycle(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.API_URL}/${id}`);
+  }
+
+  /**
+   * Get all forms for a cycle
+   */
+  getCycleForms(cycleId: number): Observable<ApiResponse<AppraisalForm[]>> {
+    return this.http.get<ApiResponse<AppraisalForm[]>>(`${this.API_URL}/${cycleId}/forms`);
   }
 
   /**

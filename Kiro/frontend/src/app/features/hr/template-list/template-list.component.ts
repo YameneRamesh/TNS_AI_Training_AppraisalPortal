@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -44,7 +44,8 @@ export class TemplateListComponent implements OnInit {
     private templateService: TemplateService,
     private router: Router,
     private dialogService: DialogService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -62,11 +63,13 @@ export class TemplateListComponent implements OnInit {
       next: (response) => {
         this.templates = response.data || [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = 'Failed to load templates. Please try again.';
         this.loading = false;
         console.error('Error loading templates:', err);
+        this.cdr.detectChanges();
       }
     });
   }

@@ -10,7 +10,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { User } from '../../core/models/user.model';
-import { UserService, UserCreateRequest, UserUpdateRequest } from '../../core/services/user.service';
+import { UserService } from '../../core/services/user.service';
+import type { UserCreateRequest, UserUpdateRequest } from '../../core/services/user.service';
 
 export interface UserFormDialogData {
   user?: User;
@@ -83,7 +84,7 @@ export class UserFormDialogComponent implements OnInit {
   loadManagers(): void {
     this.userService.getUsers({ role: 'MANAGER', size: 100 }).subscribe({
       next: (response) => {
-        this.availableManagers = response.content;
+        this.availableManagers = response.data?.content || [];
         this.cdr.markForCheck();
       },
       error: () => {

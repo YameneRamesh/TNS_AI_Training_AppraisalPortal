@@ -16,7 +16,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { User } from '../../core/models/user.model';
-import { UserService } from '../../core/services/user.service';
+import { UserService, UserSearchParams } from '../../core/services/user.service';
 import { UserFormDialogComponent } from './user-form-dialog.component';
 import { RoleAssignmentDialogComponent } from './role-assignment-dialog.component';
 
@@ -91,30 +91,28 @@ export class UserManagementDashboardComponent implements OnInit {
 
   loadUsers(): void {
     this.isLoading = true;
-    
-    const params = {
+
+    const params: UserSearchParams = {
       search: this.searchControl.value || undefined,
       role: this.roleFilter.value || undefined,
-      status: this.statusFilter.value || undefined,
+      isActive: this.statusFilter.value === 'active' ? true : this.statusFilter.value === 'inactive' ? false : undefined,
       page: this.pageIndex,
       size: this.pageSize
     };
 
     this.userService.getUsers(params).subscribe({
       next: (response) => {
-        console.log('Users response:', response);
-        console.log('Content:', response.content);
-        console.log('Users array length:', response.content?.length);
-        this.users = response.content || [];
-        this.totalUsers = response.totalElements || 0;
+        const page = response.data;
+        this.users = page?.content || [];
+        this.totalUsers = page?.totalElements || 0;
         this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: (error) => {
+      error: (err: unknown) => {
         this.isLoading = false;
         this.cdr.detectChanges();
         this.snackBar.open('Failed to load users', 'Close', { duration: 3000 });
-        console.error('Error loading users:', error);
+        console.error('Error loading users:', err);
       }
     });
   }
@@ -175,8 +173,8 @@ export class UserManagementDashboardComponent implements OnInit {
         this.snackBar.open(msg, 'Close', { duration: 3000 });
         this.loadUsers();
       },
-      error: (error) => {
-        this.snackBar.open(error.error?.message || 'Failed to update user status', 'Close', { duration: 3000 });
+      error: (err: any) => {
+        this.snackBar.open(err.error?.message || 'Failed to update user status', 'Close', { duration: 3000 });
       }
     });
   }

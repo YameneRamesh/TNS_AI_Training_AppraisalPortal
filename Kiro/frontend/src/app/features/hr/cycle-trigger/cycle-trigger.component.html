@@ -123,6 +123,13 @@
         </p>
       </div>
 
+      <div class="info-message" *ngIf="!loading && excludedEmployeeCount > 0">
+        <mat-icon>warning</mat-icon>
+        <p>
+          {{ excludedEmployeeCount }} user(s) were excluded from trigger list because no manager is assigned.
+        </p>
+      </div>
+
       <!-- Action Buttons -->
       <div class="action-buttons">
         <button 

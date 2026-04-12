@@ -7,7 +7,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
-import { User } from '../../core/models/user.model';
+import { User, Role } from '../../core/models/user.model';
+import { ApiResponse } from '../../core/models/api-response.model';
 import { UserService } from '../../core/services/user.service';
 
 export interface RoleAssignmentDialogData {
@@ -65,17 +66,18 @@ export class RoleAssignmentDialogComponent implements OnInit {
   loadRoles(): void {
     this.isLoading = true;
     this.userService.getRoles().subscribe({
-      next: (response) => {
-        this.roles = response.data!.map(role => ({
+      next: (response: ApiResponse<Role[]>) => {
+        const userRoleNames = (this.data.user.roles || []).map((r: Role) => r.name);
+        this.roles = (response.data || []).map((role: Role) => ({
           id: role.id,
           name: role.name,
           description: this.roleDescriptions[role.name] || '',
-          selected: Array.isArray(this.data.user.roles) && this.data.user.roles.includes(role.name)
+          selected: userRoleNames.includes(role.name)
         }));
         this.isLoading = false;
         this.cdr.markForCheck();
       },
-      error: (error) => {
+      error: (_err: unknown) => {
         this.isLoading = false;
         this.snackBar.open('Failed to load roles', 'Close', { duration: 3000 });
         this.cdr.markForCheck();
@@ -100,9 +102,9 @@ export class RoleAssignmentDialogComponent implements OnInit {
         this.snackBar.open('Roles updated successfully', 'Close', { duration: 3000 });
         this.dialogRef.close(response.data);
       },
-      error: (error) => {
+      error: (err: any) => {
         this.isSaving = false;
-        this.snackBar.open(error.error?.message || 'Failed to update roles', 'Close', { duration: 3000 });
+        this.snackBar.open(err.error?.message || 'Failed to update roles', 'Close', { duration: 3000 });
         this.cdr.markForCheck();
       }
     });

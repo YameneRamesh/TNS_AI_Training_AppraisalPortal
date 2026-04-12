@@ -1,77 +1,89 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { User, LoginRequest, LoginResponse } from '../models/user.model';
+import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
+import { LoginRequest, UserProfile } from '../models/user.model';
+import { ApiResponse } from '../models/api-response.model';
 import { environment } from '../../../environments/environment';
 
-/**
- * Authentication service for managing user sessions.
- */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private readonly API_URL = `${environment.apiUrl}/auth`;
-  
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+
+  private currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  
+
+  private sessionWarningSubject = new BehaviorSubject<boolean>(false);
+  public sessionWarning$ = this.sessionWarningSubject.asObservable();
+
   public isAuthenticated$ = this.currentUser$.pipe(
-    tap(user => console.log('Auth state:', user ? 'authenticated' : 'not authenticated'))
+    map(user => !!user)
   );
 
   constructor(private http: HttpClient) {
-    // this.checkAuthStatus(); // Disabled for development
+    this.checkAuthStatus();
   }
 
-  /**
-   * Check if user is currently authenticated by calling /api/auth/me
-   */
   private checkAuthStatus(): void {
-    this.http.get<User>(`${this.API_URL}/me`).subscribe({
-      next: (user) => this.currentUserSubject.next(user),
+    this.http.get<ApiResponse<UserProfile>>(`${this.API_URL}/me`).subscribe({
+      next: (response) => this.currentUserSubject.next(response.data || null),
       error: () => this.currentUserSubject.next(null)
     });
   }
 
-  /**
-   * Login with email and password
-   */
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
-      tap(response => this.currentUserSubject.next(response.user))
+  resolveSessionUser(): Observable<UserProfile | null> {
+    return this.http.get<ApiResponse<UserProfile>>(`${this.API_URL}/me`).pipe(
+      map(response => response.data || null),
+      tap(user => this.currentUserSubject.next(user)),
+      catchError(() => {
+        this.currentUserSubject.next(null);
+        return of(null);
+      })
     );
   }
 
-  /**
-   * Logout current user
-   */
-  logout(): Observable<void> {
-    return this.http.post<void>(`${this.API_URL}/logout`, {}).pipe(
+  login(credentials: LoginRequest): Observable<ApiResponse<UserProfile>> {
+    return this.http.post<ApiResponse<UserProfile>>(`${this.API_URL}/login`, credentials).pipe(
+      tap(response => {
+        if (response.data) {
+          this.currentUserSubject.next(response.data);
+        }
+      })
+    );
+  }
+
+  logout(): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(`${this.API_URL}/logout`, {}).pipe(
       tap(() => this.currentUserSubject.next(null))
     );
   }
 
-  /**
-   * Get current user value (synchronous)
-   */
-  get currentUserValue(): User | null {
+  refreshSession(): void {
+    this.http.get<ApiResponse<UserProfile>>(`${this.API_URL}/me`).subscribe({
+      next: (response) => {
+        this.currentUserSubject.next(response.data || null);
+        this.sessionWarningSubject.next(false);
+      },
+      error: () => this.currentUserSubject.next(null)
+    });
+  }
+
+  clearUser(): void {
+    this.currentUserSubject.next(null);
+  }
+
+  get currentUserValue(): UserProfile | null {
     return this.currentUserSubject.value;
   }
 
-  /**
-   * Check if user has a specific role
-   */
   hasRole(roleName: string): boolean {
     const user = this.currentUserValue;
-    return user ? user.roles.some(r => r.name === roleName) : false;
+    return user ? user.roles.includes(roleName) : false;
   }
 
-  /**
-   * Check if user has any of the specified roles
-   */
   hasAnyRole(roleNames: string[]): boolean {
     const user = this.currentUserValue;
-    return user ? user.roles.some(r => roleNames.includes(r.name)) : false;
+    return user ? user.roles.some(r => roleNames.includes(r)) : false;
   }
 }

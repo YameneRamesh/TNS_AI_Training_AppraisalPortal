@@ -33,7 +33,7 @@ public class AuditLog {
     @Column(name = "ip_address", length = 50)
     private String ipAddress;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime2")
     private Instant createdAt;
 
     @PrePersist

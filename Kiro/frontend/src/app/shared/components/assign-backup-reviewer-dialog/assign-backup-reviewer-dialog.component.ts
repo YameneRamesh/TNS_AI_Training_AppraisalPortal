@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -222,44 +222,44 @@ export interface AssignBackupReviewerData {
 export class AssignBackupReviewerDialogComponent implements OnInit {
   backupReviewerControl = new FormControl<number | null>(null, Validators.required);
   availableReviewers: User[] = [];
-  loading = false;
+  loading = true;
 
   dialogRef = inject(MatDialogRef<AssignBackupReviewerDialogComponent>);
   data: AssignBackupReviewerData = inject(MAT_DIALOG_DATA);
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
-    this.loadAvailableReviewers();
-    
-    // Pre-select current backup reviewer if exists
     if (this.data.form.backupReviewerId) {
       this.backupReviewerControl.setValue(this.data.form.backupReviewerId);
     }
+    this.loadAvailableReviewers();
   }
 
-  /**
-   * Load users who can be backup reviewers (managers and HR users)
-   */
   loadAvailableReviewers(): void {
     this.loading = true;
-    
-    this.userService.getUsers({ isActive: true }).subscribe({
+
+    this.userService.getUsers({ isActive: true, size: 1000 }).subscribe({
       next: (response) => {
-        const users = response.data || [];
-        
-        // Filter to only managers and HR users, exclude the primary manager
-        this.availableReviewers = users.filter(user => {
-          const hasManagerOrHRRole = user.roles.some(role => 
-            role.name === 'MANAGER' || role.name === 'HR'
-          );
+        const users: User[] = response.data?.content || [];
+
+        this.availableReviewers = users.filter((user: User) => {
+          const hasManagerOrHRRole = Array.isArray(user.roles) && user.roles.some((role: any) => {
+            if (typeof role === 'string') {
+              return role === 'MANAGER' || role === 'HR';
+            }
+            return role?.name === 'MANAGER' || role?.name === 'HR';
+          });
           const isNotPrimaryManager = user.id !== this.data.form.managerId;
           return hasManagerOrHRRole && isNotPrimaryManager;
         });
-        
+
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.loading = false;
+        this.cdr.detectChanges();
         console.error('Error loading reviewers:', err);
       }
     });

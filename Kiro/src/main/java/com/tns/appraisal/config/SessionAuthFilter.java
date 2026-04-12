@@ -1,6 +1,5 @@
 package com.tns.appraisal.config;
 
-import com.tns.appraisal.user.User;
 import com.tns.appraisal.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,6 +31,12 @@ public class SessionAuthFilter extends OncePerRequestFilter {
 
     public SessionAuthFilter(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.equals("/api/auth/login") || path.equals("/api/auth/logout");
     }
 
     @Override

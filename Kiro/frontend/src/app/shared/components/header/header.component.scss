@@ -37,11 +37,14 @@
 .user-profile-button {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: var(--space-3, 0.75rem);
   padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
   border-radius: 8px;
   transition: all var(--transition-base, 200ms cubic-bezier(0.4, 0, 0.2, 1));
-  color: white;
+  color: #ffffff !important;
+  min-width: 0;
+  line-height: 1;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
@@ -67,6 +70,8 @@
       font-size: var(--text-sm, 0.875rem);
       font-weight: var(--font-semibold, 600);
       line-height: 1.2;
+      color: #ffffff !important;
+      white-space: nowrap;
     }
 
     .user-role {
@@ -75,6 +80,7 @@
       font-weight: var(--font-regular, 400);
       color: var(--color-accent-300, #FCD34D);
       line-height: 1.2;
+      white-space: nowrap;
     }
   }
 
@@ -82,7 +88,15 @@
     font-size: 20px;
     width: 20px;
     height: 20px;
+    color: #ffffff !important;
   }
+}
+
+:host ::ng-deep .user-profile-button .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  white-space: nowrap;
 }
 
 ::ng-deep .user-menu {

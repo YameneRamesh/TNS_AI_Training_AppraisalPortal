@@ -226,10 +226,14 @@ public class TemplateService {
             throw new BusinessException("Template with version '" + newVersion + "' already exists");
         }
 
-        // Create new template with copied schema
+        String copiedSchema = sourceTemplate.getSchemaJson();
+        if (copiedSchema != null) {
+            schemaValidator.validateSchema(copiedSchema);
+        }
+
         AppraisalTemplate newTemplate = new AppraisalTemplate();
         newTemplate.setVersion(newVersion);
-        newTemplate.setSchemaJson(sourceTemplate.getSchemaJson());
+        newTemplate.setSchemaJson(copiedSchema);
         newTemplate.setIsActive(false);
         newTemplate.setCreatedBy(createdBy);
 

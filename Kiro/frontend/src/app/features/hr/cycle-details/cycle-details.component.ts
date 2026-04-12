@@ -95,19 +95,26 @@ export class CycleDetailsComponent implements OnInit {
 
   /**
    * Load forms for this cycle
-   * Note: This would typically be a separate API endpoint like /api/cycles/{id}/forms
-   * For now, we'll use a placeholder
    */
   loadForms(): void {
+    if (!this.cycleId) return;
+
     this.loading = true;
-    
-    // TODO: Replace with actual API call when backend endpoint is ready
-    // this.cycleService.getCycleForms(this.cycleId).subscribe(...)
-    
-    // Placeholder - in real implementation, this would fetch from backend
-    this.forms = [];
-    this.filteredForms = [];
-    this.loading = false;
+
+    this.cycleService.getCycleForms(this.cycleId).subscribe({
+      next: (response) => {
+        this.forms = response.data || [];
+        this.filteredForms = [...this.forms];
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error loading forms:', err);
+        this.snackBar.open('Failed to load forms', 'Close', { duration: 3000 });
+        this.forms = [];
+        this.filteredForms = [];
+      }
+    });
   }
 
   /**
@@ -123,6 +130,7 @@ export class CycleDetailsComponent implements OnInit {
 
     this.filteredForms = this.forms.filter(form => 
       form.employeeName?.toLowerCase().includes(term) ||
+      String(form.employeeId).includes(term) ||
       form.managerName?.toLowerCase().includes(term) ||
       form.status.toLowerCase().includes(term)
     );
@@ -154,7 +162,7 @@ export class CycleDetailsComponent implements OnInit {
     this.cycleService.reopenForm(this.cycleId, form.id).subscribe({
       next: () => {
         this.snackBar.open('Form reopened successfully', 'Close', { duration: 3000 });
-        this.loadForms(); // Reload to get updated status
+        this.reloadFormsDeferred();
       },
       error: (err) => {
         console.error('Error reopening form:', err);
@@ -195,7 +203,7 @@ export class CycleDetailsComponent implements OnInit {
     this.cycleService.assignBackupReviewer(this.cycleId, form.id, backupReviewerId).subscribe({
       next: () => {
         this.snackBar.open('Backup reviewer assigned successfully', 'Close', { duration: 3000 });
-        this.loadForms(); // Reload to get updated data
+        this.reloadFormsDeferred();
       },
       error: (err) => {
         console.error('Error assigning backup reviewer:', err);
@@ -203,6 +211,14 @@ export class CycleDetailsComponent implements OnInit {
         this.snackBar.open(errorMessage, 'Close', { duration: 5000 });
       }
     });
+  }
+
+  /**
+   * Defer form reload to the next macrotask to avoid NG0100
+   * when dialog/snackbar overlays trigger additional checks.
+   */
+  private reloadFormsDeferred(): void {
+    setTimeout(() => this.loadForms(), 0);
   }
 
   /**

@@ -1,45 +1,36 @@
-// import { inject } from '@angular/core';
-// import { Router, CanActivateFn } from '@angular/router';
-// import { AuthService } from '../services/auth.service';
-// import { map } from 'rxjs/operators';
-// import { RoleName } from '../models/user.model';
+import { inject } from '@angular/core';
+import { Router, CanActivateFn } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { of } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
 
-// /**
-//  * Role guard to protect routes that require specific roles.
-//  * Usage: Add 'data: { roles: ['ADMIN', 'HR'] }' to route configuration.
-//  */
-// export const roleGuard: CanActivateFn = (route, state) => {
-//   const authService = inject(AuthService);
-//   const router = inject(Router);
+export const roleGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-//   const requiredRoles = route.data['roles'] as RoleName[];
+  const requiredRoles = route.data['roles'] as string[];
 
-//   if (!requiredRoles || requiredRoles.length === 0) {
-//     return true;
-//   }
+  if (!requiredRoles || requiredRoles.length === 0) {
+    return true;
+  }
 
-//   return authService.currentUser$.pipe(
-//     map(user => {
-//       if (!user) {
-//         router.navigate(['/login']);
-//         return false;
-//       }
+  return authService.currentUser$.pipe(
+    take(1),
+    switchMap(user => user ? of(user) : authService.resolveSessionUser()),
+    map(user => {
+      if (!user) {
+        router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+        return false;
+      }
 
-//       const userRoles = user.roles.map(r => r.name);
-//       const hasRequiredRole = requiredRoles.some(role => userRoles.includes(role));
+      const hasRequiredRole = requiredRoles.some(role => user.roles.includes(role));
 
-//       if (hasRequiredRole) {
-//         return true;
-//       } else {
-//         console.error('Access denied: insufficient role');
-//         router.navigate(['/unauthorized']);
-//         return false;
-//       }
-//     })
-//   );
-// };
+      if (hasRequiredRole) {
+        return true;
+      }
 
-import { CanActivateFn } from '@angular/router';
-
-// Guard disabled for development - all roles are permitted
-export const roleGuard: CanActivateFn = () => true;
+      router.navigate(['/login']);
+      return false;
+    })
+  );
+};

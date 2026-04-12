@@ -12,14 +12,15 @@ import java.util.Set;
 
 /**
  * Validator for appraisal template JSON schema structure.
- * Ensures templates conform to the expected structure defined in the design document.
+ * Supports both flat item format (id/label/ratingScale on items)
+ * and nested format (items with fields arrays, as used in TnS V3.0).
  */
 @Component
 public class TemplateSchemaValidator {
 
     private static final Set<String> VALID_SECTION_TYPES = Set.of(
-        "header", "rating_key", "key_responsibilities", "idp", 
-        "policy_adherence", "goals", "next_year_goals", 
+        "header", "rating_key", "key_responsibilities", "idp",
+        "policy_adherence", "goals", "next_year_goals",
         "overall_evaluation", "signature"
     );
 
@@ -33,12 +34,6 @@ public class TemplateSchemaValidator {
         this.objectMapper = objectMapper;
     }
 
-    /**
-     * Validate the template schema JSON structure.
-     * 
-     * @param schemaJson the JSON schema string to validate
-     * @throws BusinessException if validation fails
-     */
     public void validateSchema(String schemaJson) {
         if (schemaJson == null || schemaJson.trim().isEmpty()) {
             throw new BusinessException("Template schema JSON cannot be null or empty");
@@ -46,16 +41,9 @@ public class TemplateSchemaValidator {
 
         try {
             JsonNode rootNode = objectMapper.readTree(schemaJson);
-            
-            // Validate root structure
             validateRootStructure(rootNode);
-            
-            // Validate version field
             validateVersion(rootNode);
-            
-            // Validate sections array
             validateSections(rootNode);
-            
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
@@ -67,11 +55,9 @@ public class TemplateSchemaValidator {
         if (!rootNode.isObject()) {
             throw new BusinessException("Template schema must be a JSON object");
         }
-
         if (!rootNode.has("version")) {
             throw new BusinessException("Template schema must have a 'version' field");
         }
-
         if (!rootNode.has("sections")) {
             throw new BusinessException("Template schema must have a 'sections' field");
         }
@@ -79,33 +65,26 @@ public class TemplateSchemaValidator {
 
     private void validateVersion(JsonNode rootNode) {
         JsonNode versionNode = rootNode.get("version");
-        
         if (!versionNode.isTextual()) {
             throw new BusinessException("Template 'version' field must be a string");
         }
-
-        String version = versionNode.asText();
-        if (version.trim().isEmpty()) {
+        if (versionNode.asText().trim().isEmpty()) {
             throw new BusinessException("Template 'version' field cannot be empty");
         }
     }
 
     private void validateSections(JsonNode rootNode) {
         JsonNode sectionsNode = rootNode.get("sections");
-        
         if (!sectionsNode.isArray()) {
             throw new BusinessException("Template 'sections' field must be an array");
         }
-
-        if (sectionsNode.size() == 0) {
+        if (sectionsNode.isEmpty()) {
             throw new BusinessException("Template must have at least one section");
         }
 
         Set<String> seenSectionTypes = new HashSet<>();
-        
         for (int i = 0; i < sectionsNode.size(); i++) {
-            JsonNode section = sectionsNode.get(i);
-            validateSection(section, i, seenSectionTypes);
+            validateSection(sectionsNode.get(i), i, seenSectionTypes);
         }
     }
 
@@ -114,7 +93,6 @@ public class TemplateSchemaValidator {
             throw new BusinessException("Section at index " + index + " must be a JSON object");
         }
 
-        // Validate sectionType
         if (!section.has("sectionType")) {
             throw new BusinessException("Section at index " + index + " must have a 'sectionType' field");
         }
@@ -127,18 +105,16 @@ public class TemplateSchemaValidator {
         String sectionType = sectionTypeNode.asText();
         if (!VALID_SECTION_TYPES.contains(sectionType)) {
             throw new BusinessException(
-                "Invalid section type '" + sectionType + "' at index " + index + 
+                "Invalid section type '" + sectionType + "' at index " + index +
                 ". Valid types are: " + VALID_SECTION_TYPES
             );
         }
 
-        // Check for duplicate section types
         if (seenSectionTypes.contains(sectionType)) {
             throw new BusinessException("Duplicate section type '" + sectionType + "' found");
         }
         seenSectionTypes.add(sectionType);
 
-        // Validate title
         if (!section.has("title")) {
             throw new BusinessException("Section at index " + index + " must have a 'title' field");
         }
@@ -148,9 +124,12 @@ public class TemplateSchemaValidator {
             throw new BusinessException("Section 'title' at index " + index + " must be a string");
         }
 
-        // Validate items if present
         if (section.has("items")) {
             validateItems(section.get("items"), sectionType, index);
+        }
+
+        if (section.has("fields")) {
+            validateFields(section.get("fields"), index);
         }
     }
 
@@ -162,14 +141,18 @@ public class TemplateSchemaValidator {
         }
 
         Set<String> seenItemIds = new HashSet<>();
-        
         for (int i = 0; i < itemsNode.size(); i++) {
-            JsonNode item = itemsNode.get(i);
-            validateItem(item, sectionType, sectionIndex, i, seenItemIds);
+            validateItem(itemsNode.get(i), sectionType, sectionIndex, i, seenItemIds);
         }
     }
 
-    private void validateItem(JsonNode item, String sectionType, int sectionIndex, 
+    /**
+     * Items can be either:
+     *  - Flat format: { id, label, ratingScale, ... } (simple items)
+     *  - Nested format: { id, label, fields: [...] } (items with nested field definitions)
+     * Both formats are valid.
+     */
+    private void validateItem(JsonNode item, String sectionType, int sectionIndex,
                               int itemIndex, Set<String> seenItemIds) {
         if (!item.isObject()) {
             throw new BusinessException(
@@ -177,78 +160,92 @@ public class TemplateSchemaValidator {
             );
         }
 
-        // Validate id
-        if (!item.has("id")) {
+        if (item.has("id")) {
+            JsonNode idNode = item.get("id");
+            if (idNode.isTextual()) {
+                String itemId = idNode.asText();
+                if (!itemId.trim().isEmpty()) {
+                    if (seenItemIds.contains(itemId)) {
+                        throw new BusinessException(
+                            "Duplicate item id '" + itemId + "' found in section " + sectionIndex
+                        );
+                    }
+                    seenItemIds.add(itemId);
+                }
+            }
+        }
+
+        if (item.has("label")) {
+            JsonNode labelNode = item.get("label");
+            if (!labelNode.isTextual()) {
+                throw new BusinessException(
+                    "Item 'label' at index " + itemIndex + " in section " + sectionIndex + " must be a string"
+                );
+            }
+        }
+
+        if (item.has("ratingScale")) {
+            JsonNode ratingScaleNode = item.get("ratingScale");
+            if (ratingScaleNode.isTextual()) {
+                String ratingScale = ratingScaleNode.asText();
+                if (!VALID_RATING_SCALES.contains(ratingScale)) {
+                    throw new BusinessException(
+                        "Invalid rating scale '" + ratingScale + "' at item " + itemIndex +
+                        " in section " + sectionIndex + ". Valid scales are: " + VALID_RATING_SCALES
+                    );
+                }
+            }
+        }
+
+        if (item.has("fields")) {
+            validateFields(item.get("fields"), sectionIndex);
+        }
+
+        if (item.has("ratings")) {
+            validateRatings(item.get("ratings"), sectionIndex, itemIndex);
+        }
+    }
+
+    private void validateFields(JsonNode fieldsNode, int sectionIndex) {
+        if (!fieldsNode.isArray()) {
             throw new BusinessException(
-                "Item at index " + itemIndex + " in section " + sectionIndex + " must have an 'id' field"
+                "Fields at section index " + sectionIndex + " must be an array"
             );
         }
 
-        JsonNode idNode = item.get("id");
-        if (!idNode.isTextual()) {
-            throw new BusinessException(
-                "Item 'id' at index " + itemIndex + " in section " + sectionIndex + " must be a string"
-            );
-        }
+        for (int i = 0; i < fieldsNode.size(); i++) {
+            JsonNode field = fieldsNode.get(i);
+            if (!field.isObject()) {
+                throw new BusinessException(
+                    "Field at index " + i + " in section " + sectionIndex + " must be a JSON object"
+                );
+            }
 
-        String itemId = idNode.asText();
-        if (itemId.trim().isEmpty()) {
-            throw new BusinessException(
-                "Item 'id' at index " + itemIndex + " in section " + sectionIndex + " cannot be empty"
-            );
+            if (field.has("ratingScale")) {
+                JsonNode ratingScaleNode = field.get("ratingScale");
+                if (ratingScaleNode.isTextual()) {
+                    String ratingScale = ratingScaleNode.asText();
+                    if (!VALID_RATING_SCALES.contains(ratingScale)) {
+                        throw new BusinessException(
+                            "Invalid rating scale '" + ratingScale + "' at field " + i +
+                            " in section " + sectionIndex + ". Valid scales are: " + VALID_RATING_SCALES
+                        );
+                    }
+                }
+            }
         }
+    }
 
-        // Check for duplicate item IDs
-        if (seenItemIds.contains(itemId)) {
+    private void validateRatings(JsonNode ratingsNode, int sectionIndex, int itemIndex) {
+        if (!ratingsNode.isArray()) {
             throw new BusinessException(
-                "Duplicate item id '" + itemId + "' found in section " + sectionIndex
-            );
-        }
-        seenItemIds.add(itemId);
-
-        // Validate label
-        if (!item.has("label")) {
-            throw new BusinessException(
-                "Item at index " + itemIndex + " in section " + sectionIndex + " must have a 'label' field"
-            );
-        }
-
-        JsonNode labelNode = item.get("label");
-        if (!labelNode.isTextual()) {
-            throw new BusinessException(
-                "Item 'label' at index " + itemIndex + " in section " + sectionIndex + " must be a string"
-            );
-        }
-
-        // Validate ratingScale
-        if (!item.has("ratingScale")) {
-            throw new BusinessException(
-                "Item at index " + itemIndex + " in section " + sectionIndex + " must have a 'ratingScale' field"
-            );
-        }
-
-        JsonNode ratingScaleNode = item.get("ratingScale");
-        if (!ratingScaleNode.isTextual()) {
-            throw new BusinessException(
-                "Item 'ratingScale' at index " + itemIndex + " in section " + sectionIndex + " must be a string"
-            );
-        }
-
-        String ratingScale = ratingScaleNode.asText();
-        if (!VALID_RATING_SCALES.contains(ratingScale)) {
-            throw new BusinessException(
-                "Invalid rating scale '" + ratingScale + "' at item " + itemIndex + 
-                " in section " + sectionIndex + ". Valid scales are: " + VALID_RATING_SCALES
+                "Ratings at item " + itemIndex + " in section " + sectionIndex + " must be an array"
             );
         }
     }
 
     /**
-     * Get a list of validation errors without throwing an exception.
-     * Useful for providing detailed feedback to users.
-     * 
-     * @param schemaJson the JSON schema string to validate
-     * @return list of validation error messages (empty if valid)
+     * Collect all validation errors without throwing.
      */
     public List<String> getValidationErrors(String schemaJson) {
         List<String> errors = new ArrayList<>();
@@ -260,12 +257,33 @@ public class TemplateSchemaValidator {
 
         try {
             JsonNode rootNode = objectMapper.readTree(schemaJson);
-            
-            // Collect all validation errors
-            collectRootStructureErrors(rootNode, errors);
-            collectVersionErrors(rootNode, errors);
-            collectSectionsErrors(rootNode, errors);
-            
+
+            if (!rootNode.isObject()) {
+                errors.add("Template schema must be a JSON object");
+                return errors;
+            }
+
+            if (!rootNode.has("version")) {
+                errors.add("Template schema must have a 'version' field");
+            } else {
+                JsonNode vn = rootNode.get("version");
+                if (!vn.isTextual()) errors.add("Template 'version' field must be a string");
+                else if (vn.asText().trim().isEmpty()) errors.add("Template 'version' field cannot be empty");
+            }
+
+            if (!rootNode.has("sections")) {
+                errors.add("Template schema must have a 'sections' field");
+            } else {
+                JsonNode sn = rootNode.get("sections");
+                if (!sn.isArray()) errors.add("Template 'sections' field must be an array");
+                else if (sn.isEmpty()) errors.add("Template must have at least one section");
+                else {
+                    Set<String> seenTypes = new HashSet<>();
+                    for (int i = 0; i < sn.size(); i++) {
+                        collectSectionErrors(sn.get(i), i, seenTypes, errors);
+                    }
+                }
+            }
         } catch (Exception e) {
             errors.add("Invalid JSON format: " + e.getMessage());
         }
@@ -273,66 +291,8 @@ public class TemplateSchemaValidator {
         return errors;
     }
 
-    private void collectRootStructureErrors(JsonNode rootNode, List<String> errors) {
-        if (!rootNode.isObject()) {
-            errors.add("Template schema must be a JSON object");
-            return;
-        }
-
-        if (!rootNode.has("version")) {
-            errors.add("Template schema must have a 'version' field");
-        }
-
-        if (!rootNode.has("sections")) {
-            errors.add("Template schema must have a 'sections' field");
-        }
-    }
-
-    private void collectVersionErrors(JsonNode rootNode, List<String> errors) {
-        if (!rootNode.has("version")) {
-            return; // Already reported in root structure
-        }
-
-        JsonNode versionNode = rootNode.get("version");
-        
-        if (!versionNode.isTextual()) {
-            errors.add("Template 'version' field must be a string");
-            return;
-        }
-
-        String version = versionNode.asText();
-        if (version.trim().isEmpty()) {
-            errors.add("Template 'version' field cannot be empty");
-        }
-    }
-
-    private void collectSectionsErrors(JsonNode rootNode, List<String> errors) {
-        if (!rootNode.has("sections")) {
-            return; // Already reported in root structure
-        }
-
-        JsonNode sectionsNode = rootNode.get("sections");
-        
-        if (!sectionsNode.isArray()) {
-            errors.add("Template 'sections' field must be an array");
-            return;
-        }
-
-        if (sectionsNode.size() == 0) {
-            errors.add("Template must have at least one section");
-            return;
-        }
-
-        Set<String> seenSectionTypes = new HashSet<>();
-        
-        for (int i = 0; i < sectionsNode.size(); i++) {
-            JsonNode section = sectionsNode.get(i);
-            collectSectionErrors(section, i, seenSectionTypes, errors);
-        }
-    }
-
-    private void collectSectionErrors(JsonNode section, int index, 
-                                      Set<String> seenSectionTypes, List<String> errors) {
+    private void collectSectionErrors(JsonNode section, int index,
+                                      Set<String> seenTypes, List<String> errors) {
         if (!section.isObject()) {
             errors.add("Section at index " + index + " must be a JSON object");
             return;
@@ -341,101 +301,25 @@ public class TemplateSchemaValidator {
         if (!section.has("sectionType")) {
             errors.add("Section at index " + index + " must have a 'sectionType' field");
         } else {
-            JsonNode sectionTypeNode = section.get("sectionType");
-            if (!sectionTypeNode.isTextual()) {
+            JsonNode st = section.get("sectionType");
+            if (!st.isTextual()) {
                 errors.add("Section 'sectionType' at index " + index + " must be a string");
             } else {
-                String sectionType = sectionTypeNode.asText();
-                if (!VALID_SECTION_TYPES.contains(sectionType)) {
-                    errors.add(
-                        "Invalid section type '" + sectionType + "' at index " + index + 
-                        ". Valid types are: " + VALID_SECTION_TYPES
-                    );
+                String type = st.asText();
+                if (!VALID_SECTION_TYPES.contains(type)) {
+                    errors.add("Invalid section type '" + type + "' at index " + index);
                 }
-                if (seenSectionTypes.contains(sectionType)) {
-                    errors.add("Duplicate section type '" + sectionType + "' found");
+                if (seenTypes.contains(type)) {
+                    errors.add("Duplicate section type '" + type + "' found");
                 }
-                seenSectionTypes.add(sectionType);
+                seenTypes.add(type);
             }
         }
 
         if (!section.has("title")) {
             errors.add("Section at index " + index + " must have a 'title' field");
-        } else {
-            JsonNode titleNode = section.get("title");
-            if (!titleNode.isTextual()) {
-                errors.add("Section 'title' at index " + index + " must be a string");
-            }
-        }
-
-        if (section.has("items")) {
-            collectItemsErrors(section.get("items"), index, errors);
-        }
-    }
-
-    private void collectItemsErrors(JsonNode itemsNode, int sectionIndex, List<String> errors) {
-        if (!itemsNode.isArray()) {
-            errors.add("Section 'items' at index " + sectionIndex + " must be an array");
-            return;
-        }
-
-        Set<String> seenItemIds = new HashSet<>();
-        
-        for (int i = 0; i < itemsNode.size(); i++) {
-            JsonNode item = itemsNode.get(i);
-            collectItemErrors(item, sectionIndex, i, seenItemIds, errors);
-        }
-    }
-
-    private void collectItemErrors(JsonNode item, int sectionIndex, int itemIndex, 
-                                   Set<String> seenItemIds, List<String> errors) {
-        if (!item.isObject()) {
-            errors.add("Item at index " + itemIndex + " in section " + sectionIndex + " must be a JSON object");
-            return;
-        }
-
-        if (!item.has("id")) {
-            errors.add("Item at index " + itemIndex + " in section " + sectionIndex + " must have an 'id' field");
-        } else {
-            JsonNode idNode = item.get("id");
-            if (!idNode.isTextual()) {
-                errors.add("Item 'id' at index " + itemIndex + " in section " + sectionIndex + " must be a string");
-            } else {
-                String itemId = idNode.asText();
-                if (itemId.trim().isEmpty()) {
-                    errors.add("Item 'id' at index " + itemIndex + " in section " + sectionIndex + " cannot be empty");
-                }
-                if (seenItemIds.contains(itemId)) {
-                    errors.add("Duplicate item id '" + itemId + "' found in section " + sectionIndex);
-                }
-                seenItemIds.add(itemId);
-            }
-        }
-
-        if (!item.has("label")) {
-            errors.add("Item at index " + itemIndex + " in section " + sectionIndex + " must have a 'label' field");
-        } else {
-            JsonNode labelNode = item.get("label");
-            if (!labelNode.isTextual()) {
-                errors.add("Item 'label' at index " + itemIndex + " in section " + sectionIndex + " must be a string");
-            }
-        }
-
-        if (!item.has("ratingScale")) {
-            errors.add("Item at index " + itemIndex + " in section " + sectionIndex + " must have a 'ratingScale' field");
-        } else {
-            JsonNode ratingScaleNode = item.get("ratingScale");
-            if (!ratingScaleNode.isTextual()) {
-                errors.add("Item 'ratingScale' at index " + itemIndex + " in section " + sectionIndex + " must be a string");
-            } else {
-                String ratingScale = ratingScaleNode.asText();
-                if (!VALID_RATING_SCALES.contains(ratingScale)) {
-                    errors.add(
-                        "Invalid rating scale '" + ratingScale + "' at item " + itemIndex + 
-                        " in section " + sectionIndex + ". Valid scales are: " + VALID_RATING_SCALES
-                    );
-                }
-            }
+        } else if (!section.get("title").isTextual()) {
+            errors.add("Section 'title' at index " + index + " must be a string");
         }
     }
 }

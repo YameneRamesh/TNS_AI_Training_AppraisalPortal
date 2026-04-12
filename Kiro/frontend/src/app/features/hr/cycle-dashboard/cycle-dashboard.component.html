@@ -9,7 +9,7 @@
   <div *ngIf="error && !loading" class="error-container">
     <mat-icon color="warn">error</mat-icon>
     <p>{{ error }}</p>
-    <button mat-raised-button color="primary" (click)="loadDashboard()">
+    <button mat-raised-button color="primary" (click)="loadDashboard(); loadCycles()">
       <mat-icon>refresh</mat-icon>
       Retry
     </button>

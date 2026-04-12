@@ -115,7 +115,7 @@ public class UserController {
      * @return paginated list of users
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     @Transactional(readOnly = true)
     public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> listUsers(
             @RequestParam(required = false) String searchTerm,

@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TemplateService } from '../../../core/services/template.service';
 import { AppraisalTemplate } from '../../../core/models/appraisal.model';
 
@@ -24,7 +26,9 @@ import { AppraisalTemplate } from '../../../core/models/appraisal.model';
     MatIconModule,
     MatProgressSpinnerModule,
     MatChipsModule,
-    MatTabsModule
+    MatTabsModule,
+    MatTooltipModule,
+    MatSnackBarModule
   ],
   templateUrl: './template-viewer.component.html',
   styleUrl: './template-viewer.component.scss'
@@ -39,7 +43,8 @@ export class TemplateViewerComponent implements OnInit {
   constructor(
     private templateService: TemplateService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -118,9 +123,10 @@ export class TemplateViewerComponent implements OnInit {
   copyToClipboard(): void {
     if (this.formattedJson) {
       navigator.clipboard.writeText(this.formattedJson).then(() => {
-        console.log('JSON copied to clipboard');
+        this.snackBar.open('JSON copied to clipboard', 'Close', { duration: 2000 });
       }).catch(err => {
         console.error('Failed to copy JSON:', err);
+        this.snackBar.open('Failed to copy to clipboard', 'Close', { duration: 3000 });
       });
     }
   }

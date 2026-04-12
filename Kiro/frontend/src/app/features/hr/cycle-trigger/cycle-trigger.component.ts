@@ -49,6 +49,7 @@ export class CycleTriggerComponent implements OnInit {
   cycle: AppraisalCycle | null = null;
   employees: User[] = [];
   filteredEmployees: User[] = [];
+  excludedEmployeeCount = 0;
   selection = new SelectionModel<User>(true, []);
   searchControl = new FormControl('');
   
@@ -104,9 +105,15 @@ export class CycleTriggerComponent implements OnInit {
   loadEmployees(): void {
     this.loading = true;
     
-    this.userService.getUsers({ isActive: true }).subscribe({
+    this.userService.getUsers({ isActive: true, size: 1000 }).subscribe({
       next: (response) => {
-        this.employees = response.data || [];
+        const users = response.data?.content || [];
+        const eligibleEmployees = users.filter(user =>
+          this.hasRole(user, 'EMPLOYEE') && (user.managerId != null || !!user.managerName)
+        );
+
+        this.excludedEmployeeCount = users.length - eligibleEmployees.length;
+        this.employees = eligibleEmployees;
         this.filteredEmployees = [...this.employees];
         this.loading = false;
       },
@@ -136,6 +143,15 @@ export class CycleTriggerComponent implements OnInit {
       emp.department?.toLowerCase().includes(term) ||
       emp.designation?.toLowerCase().includes(term)
     );
+  }
+
+  private hasRole(user: User, roleName: string): boolean {
+    return Array.isArray(user.roles) && user.roles.some((role: any) => {
+      if (typeof role === 'string') {
+        return role === roleName;
+      }
+      return role?.name === roleName;
+    });
   }
 
   /**
@@ -232,15 +248,16 @@ export class CycleTriggerComponent implements OnInit {
    * Show dialog for partial failure results
    */
   showPartialFailureDialog(result: TriggerCycleResult): void {
+    const failureDetails = result.failures
+      .map(f => `- Employee #${f.employeeId}: ${f.errorReason}`)
+      .join('\n');
+
     const message = `Cycle triggered with partial success:\n` +
-      `✓ Success: ${result.successCount}\n` +
-      `✗ Failed: ${result.failureCount}\n\n` +
-      `Failed employees:\n` +
-      result.failures.map(f => `- ${f.employeeName}: ${f.reason}`).join('\n');
+      `Success: ${result.successCount} / Failed: ${result.failureCount}\n\n` +
+      `Failed employees:\n${failureDetails}`;
     
     this.snackBar.open(message, 'Close', { duration: 10000 });
     
-    // Navigate back after showing message
     setTimeout(() => {
       this.router.navigate(['/hr/cycles']);
     }, 2000);

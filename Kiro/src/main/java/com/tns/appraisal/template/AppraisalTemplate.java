@@ -29,7 +29,7 @@ public class AppraisalTemplate {
     @Column(name = "created_by")
     private Long createdBy;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime2")
     private Instant createdAt;
 
     @PrePersist

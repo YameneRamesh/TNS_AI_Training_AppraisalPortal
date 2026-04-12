@@ -9,14 +9,14 @@
   
   <span class="spacer"></span>
   
-  @if (user) {
+  @if (user()) {
     <div class="user-section">
       <button mat-button class="user-profile-button" [matMenuTriggerFor]="userMenu">
         <div class="user-avatar">
           <mat-icon>account_circle</mat-icon>
         </div>
         <div class="user-info">
-          <span class="user-name">{{ user.fullName }}</span>
+          <span class="user-name">{{ user()!.fullName }}</span>
           <span class="user-role">{{ getPrimaryRole() }}</span>
         </div>
         <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
@@ -28,9 +28,9 @@
             <mat-icon>account_circle</mat-icon>
           </div>
           <div class="user-menu-details">
-            <p class="user-menu-name">{{ user.fullName }}</p>
-            <p class="user-menu-email">{{ user.email }}</p>
-            <p class="user-menu-id">ID: {{ user.employeeId }}</p>
+            <p class="user-menu-name">{{ user()!.fullName }}</p>
+            <p class="user-menu-email">{{ user()!.email }}</p>
+            <p class="user-menu-id">ID: {{ user()!.employeeId }}</p>
           </div>
         </div>
         
@@ -39,16 +39,16 @@
         <div class="user-menu-info">
           <button mat-menu-item disabled class="info-item">
             <mat-icon>badge</mat-icon>
-            <span>{{ user.designation || 'Not specified' }}</span>
+            <span>{{ user()!.designation || 'Not specified' }}</span>
           </button>
           <button mat-menu-item disabled class="info-item">
             <mat-icon>business</mat-icon>
-            <span>{{ user.department || 'Not specified' }}</span>
+            <span>{{ user()!.department || 'Not specified' }}</span>
           </button>
-          @if (user.managerName) {
+          @if (user()!.managerName) {
             <button mat-menu-item disabled class="info-item">
               <mat-icon>supervisor_account</mat-icon>
-              <span>Manager: {{ user.managerName }}</span>
+              <span>Manager: {{ user()!.managerName }}</span>
             </button>
           }
         </div>

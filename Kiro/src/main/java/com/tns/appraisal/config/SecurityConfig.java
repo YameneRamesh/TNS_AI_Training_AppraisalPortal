@@ -11,47 +11,37 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
-/**
- * Security configuration for session-based authentication with role-based access control.
- * Configures Spring Security for the Employee Appraisal Cycle application.
- */
 @Configuration
 @EnableWebSecurity
-// @EnableMethodSecurity // Disabled for development - re-enable when authentication is implemented
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    /**
-     * Configures HTTP security with session-based authentication.
-     * - Disables CSRF for POC environment
-     * - Uses HTTP (not HTTPS) for POC
-     * - Sets session timeout to 15 minutes (configured in application.properties)
-     * - Defines public and protected endpoints
-     * - Handles session expiration with 401 response
-     */
+    private final SessionAuthFilter sessionAuthFilter;
+
+    public SecurityConfig(SessionAuthFilter sessionAuthFilter) {
+        this.sessionAuthFilter = sessionAuthFilter;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Enable CORS - delegates to WebMvcConfig.addCorsMappings()
             .cors(Customizer.withDefaults())
-
-            // Disable CSRF for POC environment
             .csrf(csrf -> csrf.disable())
-            
-            // Configure authorization rules
+
             .authorizeHttpRequests(auth -> auth
-                // All endpoints are publicly accessible for development testing
-                .anyRequest().permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/logout").permitAll()
+                .anyRequest().authenticated()
             )
-            
-            // Configure session management with 15-minute timeout
+
+            .addFilterBefore(sessionAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
             .sessionManagement(session -> session
-                // Allow only one session per user
                 .maximumSessions(1)
-                // Don't prevent login if max sessions reached (invalidate old session)
                 .maxSessionsPreventsLogin(false)
-                // Handle expired sessions with 401 response
                 .expiredSessionStrategy(event -> {
                     var response = event.getResponse();
                     response.setStatus(401);
@@ -65,8 +55,7 @@ public class SecurityConfig {
                     );
                 })
             )
-            
-            // Configure logout
+
             .logout(logout -> logout
                 .logoutUrl("/api/auth/logout")
                 .invalidateHttpSession(true)
@@ -81,8 +70,7 @@ public class SecurityConfig {
                     );
                 })
             )
-            
-            // Return 401 for unauthenticated requests
+
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setStatus(401);
@@ -95,31 +83,32 @@ public class SecurityConfig {
                         "\"path\":\"" + request.getRequestURI() + "\"}"
                     );
                 })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(403);
+                    response.setContentType("application/json");
+                    response.getWriter().write(
+                        "{\"timestamp\":\"" + java.time.Instant.now() + "\"," +
+                        "\"status\":403," +
+                        "\"error\":\"Forbidden\"," +
+                        "\"message\":\"Access denied: insufficient role\"," +
+                        "\"path\":\"" + request.getRequestURI() + "\"}"
+                    );
+                })
             );
-        
+
         return http.build();
     }
 
-    /**
-     * Password encoder using BCrypt hashing algorithm.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Authentication manager for handling authentication requests.
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    /**
-     * Session event publisher for tracking session lifecycle events.
-     * Required for session timeout handling.
-     */
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
